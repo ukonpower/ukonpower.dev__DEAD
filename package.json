@@ -6,6 +6,10 @@
     "type": "git",
     "url": ""
   },
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npx gulp",
     "build": "npx gulp"
@@ -19,6 +23,7 @@
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "@babel/register": "^7.17.7",
+    "@types/three": "^0.139.0",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "browser-sync": "^2.27.9",
@@ -39,16 +44,13 @@
     "raw-loader": "^4.0.2",
     "sass": "^1.50.1",
     "supports-color": "8.1.1",
+    "three": "^0.139.2",
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
     "webpack": "^5.72.0",
     "webpack-stream": "^7.0.0"
   },
   "dependencies": {
-    "@types/three": "^0.139.0",
-    "lethargy": "^1.0.9",
-    "three": "^0.139.2",
-    "to-px": "^1.1.0",
     "wolfy87-eventemitter": "^5.2.9"
   }
 }

@@ -1,3 +1,6 @@
 [submodule "src/ts/libs/ore-three-ts"]
-	path = src/ts/libs/ore-three-ts
+	path = packages/ore-three-ts
 	url = https://github.com/ukonpower/ore-three-ts.git
+[submodule "src/ts/libs/PowerMesh"]
+	path = packages/PowerMesh
+	url = https://github.com/ukonpower/PowerMesh.git

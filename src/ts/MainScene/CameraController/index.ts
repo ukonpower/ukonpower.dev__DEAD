@@ -1,34 +1,28 @@
 import * as THREE from 'three';
-import * as ORE from '@ore-three-ts';
+import * as ORE from 'ore-three-ts';
 
 export class CameraController {
 
 	private camera: THREE.PerspectiveCamera;
-	private cameraBasePos: THREE.Vector3;
-	private cameraTargetPos: THREE.Vector3;
+	private cameraTransform: THREE.Object3D;
+	private cameraTarget: THREE.Object3D;
+	private cameraData: THREE.PerspectiveCamera;
 
 	private cursorPos: THREE.Vector2;
 	public cursorPosDelay: THREE.Vector2;
 	private cameraMoveWeight: THREE.Vector2;
 
-	private baseCamera: THREE.PerspectiveCamera;
-
-	constructor( camera: THREE.PerspectiveCamera, data?: THREE.Object3D ) {
+	constructor( camera: THREE.PerspectiveCamera, cameraContainer: THREE.Object3D, cameraTarget: THREE.Object3D ) {
 
 		this.camera = camera;
 
-		let cameraModel = data && data.getObjectByName( 'Camera' ) as THREE.PerspectiveCamera;
-		this.cameraBasePos = cameraModel ? cameraModel.getWorldPosition( new THREE.Vector3() ) : new THREE.Vector3( 0, 1, 5 );
-
-		let cameraTarget = data && data.getObjectByName( 'CameraTarget' );
-		this.cameraTargetPos = cameraTarget ? cameraTarget.getWorldPosition( new THREE.Vector3() ) : new THREE.Vector3( 0, 1, 0 );
-
-		let baseCamera = data && data.getObjectByName( 'Camera' );
-		this.baseCamera = baseCamera ? ( baseCamera.children[ 0 ] as THREE.PerspectiveCamera ) : camera.clone() as THREE.PerspectiveCamera;
+		this.cameraTransform = cameraContainer;
+		this.cameraData = cameraContainer.children[ 0 ] as THREE.PerspectiveCamera;
+		this.cameraTarget = cameraTarget;
 
 		this.cursorPos = new THREE.Vector2();
 		this.cursorPosDelay = new THREE.Vector2();
-		this.cameraMoveWeight = new THREE.Vector2( 1.0, 1.0 );
+		this.cameraMoveWeight = new THREE.Vector2( 0.5, 0.1 );
 
 	}
 
@@ -48,19 +42,14 @@ export class CameraController {
 		diff.multiply( diff.clone().addScalar( 1.0 ) );
 		this.cursorPosDelay.add( diff );
 
-		this.camera.position.set( this.cameraBasePos.x + this.cursorPosDelay.x * this.cameraMoveWeight.x, this.cameraBasePos.y + this.cursorPosDelay.y * this.cameraMoveWeight.y, this.cameraBasePos.z );
-
-		if ( this.cameraTargetPos ) {
-
-			this.camera.lookAt( this.cameraTargetPos );
-
-		}
+		this.camera.position.set( this.cameraTransform.position.x + this.cursorPosDelay.x * this.cameraMoveWeight.x, this.cameraTransform.position.y + this.cursorPosDelay.y * this.cameraMoveWeight.y, this.cameraTransform.position.z );
+		this.camera.lookAt( this.cameraTarget.position );
 
 	}
 
 	public resize( layerInfo: ORE.LayerInfo ) {
 
-		this.camera.fov = this.baseCamera.fov + layerInfo.size.portraitWeight * 20.0;
+		this.camera.fov = this.cameraData.fov + layerInfo.size.portraitWeight * 20.0;
 		this.camera.updateProjectionMatrix();
 
 	}

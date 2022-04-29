@@ -1,14 +1,19 @@
-import * as ORE from '@ore-three-ts';
+import * as ORE from 'ore-three-ts';
 import * as THREE from 'three';
 import { GlobalManager } from './GlobalManager';
 import { RenderPipeline } from './RenderPipeline';
 import { CameraController } from './CameraController';
 import { AssetManager } from './GlobalManager/AssetManager';
+import { World } from './World';
 export class MainScene extends ORE.BaseLayer {
 
 	private gManager?: GlobalManager;
 	private renderPipeline?: RenderPipeline;
 	private cameraController?: CameraController;
+
+	private connector?: ORE.BlenderConnector;
+
+	private world?: World;
 
 	constructor() {
 
@@ -25,7 +30,7 @@ export class MainScene extends ORE.BaseLayer {
 		this.gManager = new GlobalManager();
 
 		this.gManager.assetManager.load( { assets: [
-			{ name: 'scene', path: './assets/scene/scene.glb', type: 'gltf' }
+			{ name: 'scene', path: './assets/scene/ukonpower.glb', type: 'gltf' }
 		] } );
 
 		this.gManager.assetManager.addEventListener( 'loadMustAssets', ( e ) => {
@@ -47,17 +52,34 @@ export class MainScene extends ORE.BaseLayer {
 
 	private initScene() {
 
+		/*-------------------------------
+			Connector
+		-------------------------------*/
+
+		this.connector = new ORE.BlenderConnector( "ws://localhost:3000" );
+		this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
+
+		console.log( "aaa" );
+
+
 		if ( this.renderer ) {
 
 			this.renderPipeline = new RenderPipeline( this.renderer, this.commonUniforms );
 
 		}
 
-		this.cameraController = new CameraController( this.camera, this.scene.getObjectByName( 'CameraData' ) );
+		/*-------------------------------
+			CameraController
+		-------------------------------*/
 
-		let light = new THREE.DirectionalLight();
-		light.position.set( 1, 2, 1 );
-		this.scene.add( light );
+		this.cameraController = new CameraController( this.camera, this.scene.getObjectByName( 'Camera' ) as THREE.Object3D, this.scene.getObjectByName( 'CameraTarget' ) as THREE.Object3D );
+
+		/*-------------------------------
+			World
+		-------------------------------*/
+
+		this.world = new World( this.scene, this.commonUniforms );
+		this.scene.add( this.world );
 
 	}
 

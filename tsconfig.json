@@ -11,12 +11,17 @@
 	  ],
 	  "allowSyntheticDefaultImports": true,
 	  "typeRoots": ["node_modules/@types"],
-	  "rootDir": "./src/",
+	  "rootDir": "./",
 	  "outDir": "./public",
 	  "baseUrl": ".",
 	  "paths": {
-		"@ore-three-ts" : ["./src/ts/libs/ore-three-ts/src"]
+		"~/*": ["src/*"],
 	  }
 	},
-	"include": ["./src/"]
+	"include": [
+		"./src/",
+		"./packages/*/src/",
+	],
+	"exclude": [
+	]
   }

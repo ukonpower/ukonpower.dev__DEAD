@@ -38,7 +38,7 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".js"],
 		alias: {
-            "@ore-three-ts": path.resolve(__dirname, 'src/ts/libs/ore-three-ts/src')
+			"~/*": "src/*",
         }
 	},
 	cache: {
