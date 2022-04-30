@@ -4,6 +4,7 @@ module.exports = {
 	watch: true,
 	watchOptions: {
 		aggregateTimeout: 100,
+		poll: 500
 	},
     mode: 'development',
     entry: {

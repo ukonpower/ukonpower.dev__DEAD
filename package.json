@@ -11,7 +11,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npx gulp",
+    "dev": "npx gulp & npm run dev -w packages/power-mesh",
     "build": "npx gulp"
   },
   "author": "ukonpower",

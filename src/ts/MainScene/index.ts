@@ -5,6 +5,7 @@ import { RenderPipeline } from './RenderPipeline';
 import { CameraController } from './CameraController';
 import { AssetManager } from './GlobalManager/AssetManager';
 import { World } from './World';
+
 export class MainScene extends ORE.BaseLayer {
 
 	private gManager?: GlobalManager;
