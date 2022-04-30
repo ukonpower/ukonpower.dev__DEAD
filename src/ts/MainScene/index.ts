@@ -59,9 +59,6 @@ export class MainScene extends ORE.BaseLayer {
 		this.connector = new ORE.BlenderConnector( "ws://localhost:3000" );
 		this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
 
-		console.log( "aaa" );
-
-
 		if ( this.renderer ) {
 
 			this.renderPipeline = new RenderPipeline( this.renderer, this.commonUniforms );
