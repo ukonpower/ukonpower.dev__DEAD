@@ -25,8 +25,6 @@ export class Triangle {
 			transparent: true,
 		} );
 
-		this.mesh.renderOrder = 999;
-
 	}
 
 }

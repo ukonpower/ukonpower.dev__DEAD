@@ -6,6 +6,7 @@ import { BackNoise } from './BackNoise';
 import { PowerMesh } from 'power-mesh';
 import { Triangle } from './Triangle';
 import { Trail } from './Trail';
+import { Particles } from './Particles';
 
 export class World extends THREE.Object3D {
 
@@ -24,6 +25,7 @@ export class World extends THREE.Object3D {
 	private floor: Floor;
 	private triangle: Triangle;
 	private trail: Trail;
+	private particles: Particles;
 
 	// powermesh
 
@@ -104,11 +106,20 @@ export class World extends THREE.Object3D {
 			Trail
 		-------------------------------*/
 
-		this.trail = new Trail( this.renderer, 100, 30, this.commonUniforms );
+		this.trail = new Trail( this.renderer, 50, 30, this.commonUniforms );
 		this.trail.castShadow = true;
 		this.trail.receiveShadow = true;
 		this.trail.position.set( 0.0, 6.0, 5.0 );
 		this.scene.add( this.trail );
+
+		/*-------------------------------
+			Particle
+		-------------------------------*/
+
+		this.particles = new Particles( this.commonUniforms );
+		this.particles.position.set( 0.0, 1.0, 11.0 );
+		this.particles.frustumCulled = false;
+		this.scene.add( this.particles );
 
 		/*-------------------------------
 			PowerMeshes

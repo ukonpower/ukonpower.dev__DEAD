@@ -1,7 +1,6 @@
 varying vec2 vUv;
 varying vec3 vTangent;
 varying vec3 vBitangent;
-varying vec3 vColor;
 
 /*-------------------------------
 	Require
@@ -490,9 +489,6 @@ void main( void ) {
 		mat.opacity = opacity;
 
 	#endif
-	
-	mat.albedo = vColor;
-	// mat.emission = vColor;
 	
 	if( mat.opacity < 0.5 ) discard;
 

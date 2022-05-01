@@ -10,7 +10,8 @@ varying vec3 vBitangent;
 varying vec3 vViewPos;
 varying vec3 vWorldPos;
 varying vec2 vHighPrecisionZW;
-varying vec3 vColor;
+
+uniform float time;
 
 uniform sampler2D dataPos;
 uniform float aboutOffset;
@@ -58,6 +59,7 @@ void main( void ) {
 
     p.xy *= smoothstep( 0.0, 1.0, 1.0 - uvx );
 	p.xy *= ((sin( computeUV.y * TPI ) * 0.5 + 0.5) * 0.7 + 0.3);
+	p.xy *= 1.0 + sin( computeUV.x * 10.0 - time * 10.0) * 0.2;
 
 	mat3 rot = makeRotationDir( vec, vec3( 0.0, 1.0, 0.0 ) );
 	p *= rot;
@@ -115,7 +117,4 @@ void main( void ) {
 	vWorldPos = worldPos.xyz;
 	vHighPrecisionZW = gl_Position.zw;
 
-	// vColor = hsv2rgb( vec3( 0.07 - uvx * 0.4, 1.0, 1.0 ) ) * 1.0;
-	vColor = vec3( 1.0 );
-	
 }

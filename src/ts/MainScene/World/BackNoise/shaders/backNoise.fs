@@ -28,7 +28,7 @@ void main( void ) {
 
 	col += smoothstep( 0.93, 0.94, mod( n1 * 10.0, 1.0 ) );
 
-	col *= smoothstep( 0.8, 0.6, vUv.y );
+	col *= smoothstep( 0.75, 0.55, vUv.y );
 
 	gl_FragColor = vec4( col, 1.0 );
 

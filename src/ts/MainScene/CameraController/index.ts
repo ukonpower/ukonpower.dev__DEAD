@@ -26,11 +26,12 @@ export class CameraController {
 
 		this.cursorPos = new THREE.Vector2();
 		this.cursorPosDelay = new THREE.Vector2();
-		this.cameraMoveWeight = new THREE.Vector2( 0.5, 0.1 ).multiplyScalar( 10.0 );
+		this.cameraMoveWeight = new THREE.Vector2( 0.2, 0.2 );
 
 		this.camera.position.copy( this.cameraTransform.position );
-		this.controls = new OrbitControls( this.camera, document.querySelector( '#canvas' ) as HTMLCanvasElement );
-		this.controls.target = ( this.cameraTarget.position );
+
+		// this.controls = new OrbitControls( this.camera, document.querySelector( '#canvas' ) as HTMLCanvasElement );
+		// this.controls.target = ( this.cameraTarget.position );
 
 	}
 

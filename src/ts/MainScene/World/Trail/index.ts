@@ -51,7 +51,7 @@ export class Trail extends PowerMesh {
 		let uvXArray = [];
 		let uvYArray = [];
 
-		let r = .2;
+		let r = .3;
 		let res = 8;
 		for ( let j = 0; j < length; j ++ ) {
 
@@ -199,10 +199,12 @@ export class Trail extends PowerMesh {
 
     	for ( let i = 0; i < this.num; i ++ ) {
 
+			let r = Math.random() * Math.PI * 1.0 - Math.PI / 2.0;
+
 			let pos = [
-				( Math.random() - 0.5 ) * 10.0,
-				( Math.random() - 0.5 ) * 10.0,
-				( Math.random() - 0.5 ) * 10.0,
+				Math.sin( r ) * 10.0,
+				( Math.random() - 0.5 ) * 10.0 + 5.0,
+				Math.cos( r ) * 10.0,
 				0,
 			];
 
@@ -219,7 +221,9 @@ export class Trail extends PowerMesh {
 
     	}
 
-    	return new THREE.DataTexture( new Float32Array( dataArray ), this.length, this.num, THREE.RGBAFormat, THREE.FloatType );
+    	let tex = new THREE.DataTexture( new Float32Array( dataArray ), this.length, this.num, THREE.RGBAFormat, THREE.FloatType );
+		tex.needsUpdate = true;
+		return tex;
 
 	}
 

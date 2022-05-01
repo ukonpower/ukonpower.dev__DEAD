@@ -11,6 +11,10 @@ uniform float time;
 
 #pragma glslify: random = require( './random.glsl' );
 
+vec2 lens_distortion(vec2 r, float alpha) {
+    return r * (1.0 - alpha * dot(r, r)); 
+}
+
 void main(){
 
 	vec3 c = vec3( 0.0 );
@@ -27,17 +31,14 @@ void main(){
 	#pragma unroll_loop_start
 	for ( int i = 0; i < 3; i ++ ) {
 		
-		slide = float( UNROLLED_LOOP_INDEX ) / 5.0;
+		slide = float( UNROLLED_LOOP_INDEX ) * 0.01;
 
-		rUV = uv + vec2( 0.0, 0.0 ) * slide;
-		gUV = uv + vec2( 0.0025, 0.0 ) * slide;
-		bUV = uv + vec2( 0.005, 0.0 ) * slide;
-
-		c.x += texture2D(sceneTex, rUV ).x;
-		c.y += texture2D(sceneTex, gUV ).y;
-		c.z += texture2D(sceneTex, bUV ).z;
+		c.x += texture2D(sceneTex,lens_distortion( uv - 0.5, slide ) + 0.5).x;
+        c.y += texture2D(sceneTex,lens_distortion( uv - 0.5, slide * 2.0 ) + 0.5).y;
+        c.z += texture2D(sceneTex,lens_distortion( uv - 0.5, slide * 3.0 ) + 0.5).z;
 
 	}
+	
 	#pragma unroll_loop_end
 	c /= float( 3 );
 	
@@ -49,9 +50,9 @@ void main(){
 	}
 	#pragma unroll_loop_end
 
-	// c += random( uv ) * 0.1 * c;
+	c += random( uv ) * 0.15 * c;
 
-	c *= smoothstep( -1.5, 0.5, 1.0 - length( cuv ) );
+	c *= smoothstep( -0.8, 0.5, 1.0 - length( cuv ) );
 
 	gl_FragColor = vec4( c, 1.0 );
 
