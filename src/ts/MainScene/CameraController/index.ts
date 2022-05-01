@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import * as ORE from 'ore-three-ts';
 
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
 export class CameraController {
 
 	private camera: THREE.PerspectiveCamera;
@@ -12,6 +14,8 @@ export class CameraController {
 	public cursorPosDelay: THREE.Vector2;
 	private cameraMoveWeight: THREE.Vector2;
 
+	private controls?: OrbitControls;
+
 	constructor( camera: THREE.PerspectiveCamera, cameraContainer: THREE.Object3D, cameraTarget: THREE.Object3D ) {
 
 		this.camera = camera;
@@ -22,7 +26,11 @@ export class CameraController {
 
 		this.cursorPos = new THREE.Vector2();
 		this.cursorPosDelay = new THREE.Vector2();
-		this.cameraMoveWeight = new THREE.Vector2( 0.5, 0.1 );
+		this.cameraMoveWeight = new THREE.Vector2( 0.5, 0.1 ).multiplyScalar( 10.0 );
+
+		this.camera.position.copy( this.cameraTransform.position );
+		this.controls = new OrbitControls( this.camera, document.querySelector( '#canvas' ) as HTMLCanvasElement );
+		this.controls.target = ( this.cameraTarget.position );
 
 	}
 
@@ -37,6 +45,13 @@ export class CameraController {
 	public update( deltaTime: number ) {
 
 		deltaTime = Math.min( 0.3, deltaTime );
+
+		if ( this.controls ) {
+
+			this.controls.update();
+			return;
+
+		}
 
 		let diff = this.cursorPos.clone().sub( this.cursorPosDelay ).multiplyScalar( deltaTime * 1.0 );
 		diff.multiply( diff.clone().addScalar( 1.0 ) );

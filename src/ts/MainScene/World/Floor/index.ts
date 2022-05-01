@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as ORE from 'ore-three-ts';
-import { PowerReflectionMesh } from 'powermesh';
+import { PowerReflectionMesh } from 'power-mesh';
 
 import floorVert from './shaders/floor.vs';
 

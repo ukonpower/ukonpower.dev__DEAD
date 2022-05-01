@@ -15,6 +15,7 @@ export class MainScene extends ORE.BaseLayer {
 	private connector?: ORE.BlenderConnector;
 
 	private world?: World;
+	private envMap?: THREE.CubeTexture;
 
 	constructor() {
 
@@ -29,6 +30,10 @@ export class MainScene extends ORE.BaseLayer {
 		super.onBind( info );
 
 		this.gManager = new GlobalManager();
+
+		/*-------------------------------
+			load Scene
+		-------------------------------*/
 
 		this.gManager.assetManager.load( { assets: [
 			{ name: 'scene', path: './assets/scene/ukonpower.glb', type: 'gltf' }
@@ -49,9 +54,35 @@ export class MainScene extends ORE.BaseLayer {
 
 		} );
 
+		/*-------------------------------
+			Load env
+		-------------------------------*/
+
+		new THREE.CubeTextureLoader().load( [
+			'./assets/envmap/px.png',
+			'./assets/envmap/nx.png',
+			'./assets/envmap/py.png',
+			'./assets/envmap/ny.png',
+			'./assets/envmap/pz.png',
+			'./assets/envmap/nz.png',
+		], tex => {
+
+			this.envMap = tex;
+
+			if ( this.world ) {
+
+				this.world.updateEnvMap( this.envMap );
+
+			}
+
+		} );
+
 	}
 
 	private initScene() {
+
+		// rendererはきっとある.
+		if ( ! this.renderer ) return;
 
 		/*-------------------------------
 			Connector
@@ -61,6 +92,8 @@ export class MainScene extends ORE.BaseLayer {
 		this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
 
 		if ( this.renderer ) {
+
+			this.renderer.shadowMap.enabled = true;
 
 			this.renderPipeline = new RenderPipeline( this.renderer, this.commonUniforms );
 
@@ -76,8 +109,14 @@ export class MainScene extends ORE.BaseLayer {
 			World
 		-------------------------------*/
 
-		this.world = new World( this.scene, this.commonUniforms );
+		this.world = new World( this.renderer, this.scene, this.commonUniforms );
 		this.scene.add( this.world );
+
+		if ( this.envMap ) {
+
+			this.world.updateEnvMap( this.envMap );
+
+		}
 
 	}
 
@@ -86,6 +125,12 @@ export class MainScene extends ORE.BaseLayer {
 		if ( this.cameraController ) {
 
 			this.cameraController.update( deltaTime );
+
+		}
+
+		if ( this.world ) {
+
+			this.world.update( deltaTime );
 
 		}
 

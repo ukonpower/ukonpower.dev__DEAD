@@ -1,14 +1,19 @@
+uniform float time;
 varying vec2 vUv;
 varying vec3 vDir;
+
+#pragma glslify: hsv2rgb = require('./hsv2rgb.glsl' )
 
 void main( void ) {
 
 	vec3 d = normalize( vDir );
 
-	float c = 0.0;
-	c += smoothstep( 0.4, 1.0, dot( d, normalize( vec3( 0.0, 0.2, -1.0 ) ) ) );
-	c = exp( -( 1.0 - c ) * 6.0 ) * 0.1;
+	float brightness = 0.0;
+	brightness += smoothstep( 0.6, 1.0, dot( d, normalize( vec3( 0.0, 0.2, -1.0 ) ) ) );
+	brightness = exp( -( 1.0 - brightness ) * 6.0 ) * 0.1;
 
-	gl_FragColor = vec4( vec3( c ), 1.0 );
+	vec3 c = vec3( brightness );
+
+	gl_FragColor = vec4( c, 1.0 );
 
 }
