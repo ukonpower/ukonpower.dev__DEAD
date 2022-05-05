@@ -11,7 +11,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npx gulp & npm run dev -w packages/power-mesh",
+    "dev": "npx gulp & npm run dev -w packages/power-mesh & npm run dev -w packages/ore-three-ts",
     "build": "npx gulp"
   },
   "author": "ukonpower",
@@ -23,6 +23,7 @@
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "@babel/register": "^7.17.7",
+    "@types/node": "^17.0.31",
     "@types/three": "^0.139.0",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
