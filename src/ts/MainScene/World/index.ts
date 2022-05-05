@@ -167,6 +167,8 @@ export class World extends THREE.Object3D {
 
 		this.trail.update( deltaTime );
 
+		this.turingPattern.update( deltaTime );
+
 	}
 
 	public updateEnvMap( envMap: THREE.CubeTexture ) {
