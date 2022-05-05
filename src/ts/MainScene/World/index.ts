@@ -7,6 +7,7 @@ import { PowerMesh } from 'power-mesh';
 import { Triangle } from './Triangle';
 import { Trail } from './Trail';
 import { Particles } from './Particles';
+import { TuringPatternRenderer } from './TuringPatternRenderer';
 
 export class World extends THREE.Object3D {
 
@@ -26,6 +27,7 @@ export class World extends THREE.Object3D {
 	private triangle: Triangle;
 	private trail: Trail;
 	private particles: Particles;
+	private turingPattern: TuringPatternRenderer;
 
 	// powermesh
 
@@ -122,35 +124,42 @@ export class World extends THREE.Object3D {
 		this.scene.add( this.particles );
 
 		/*-------------------------------
+			Turing Pattern
+		-------------------------------*/
+
+		this.turingPattern = new TuringPatternRenderer( this.renderer, this.commonUniforms );
+		this.add( this.turingPattern );
+
+		/*-------------------------------
 			PowerMeshes
 		-------------------------------*/
 
-		let applyPowerMesh = ( objList: THREE.Object3D[] ) => {
+		// let applyPowerMesh = ( objList: THREE.Object3D[] ) => {
 
-			objList.forEach( item => {
+		// 	objList.forEach( item => {
 
-				let mesh = item as THREE.Mesh;
+		// 		let mesh = item as THREE.Mesh;
 
-				if ( mesh.isMesh ) {
+		// 		if ( mesh.isMesh ) {
 
-					mesh = new PowerMesh( mesh, {
-						uniforms: this.commonUniforms
-					}, true );
+		// 			mesh = new PowerMesh( mesh, {
+		// 				uniforms: this.commonUniforms
+		// 			}, true );
 
-					mesh.castShadow = true;
-					mesh.receiveShadow = true;
+		// 			mesh.castShadow = true;
+		// 			mesh.receiveShadow = true;
 
-					this.powerMeshAll.push( mesh as PowerMesh );
+		// 			this.powerMeshAll.push( mesh as PowerMesh );
 
-				}
+		// 		}
 
-				applyPowerMesh( mesh.children.slice() );
+		// 		applyPowerMesh( mesh.children.slice() );
 
-			} );
+		// 	} );
 
-		};
+		// };
 
-		applyPowerMesh( this.commonRoot.children.slice() );
+		// applyPowerMesh( this.commonRoot.children.slice() );
 
 	}
 

@@ -51,6 +51,7 @@
     "webpack-stream": "^7.0.0"
   },
   "dependencies": {
+    "tweakpane": "^3.0.8",
     "wolfy87-eventemitter": "^5.2.9"
   }
 }
