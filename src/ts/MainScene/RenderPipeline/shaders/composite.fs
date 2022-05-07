@@ -54,6 +54,8 @@ void main(){
 
 	c *= smoothstep( -0.8, 0.5, 1.0 - length( cuv ) );
 
+	c = texture2D( sceneTex, vUv ).xyz;
+
 	gl_FragColor = vec4( c, 1.0 );
 
 }

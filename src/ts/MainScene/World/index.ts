@@ -8,6 +8,7 @@ import { Triangle } from './Triangle';
 import { Trail } from './Trail';
 import { Particles } from './Particles';
 import { TuringPatternRenderer } from './TuringPatternRenderer';
+import { Face } from './Face';
 
 export class World extends THREE.Object3D {
 
@@ -24,6 +25,7 @@ export class World extends THREE.Object3D {
 
 	private backNoise: BackNoise;
 	private floor: Floor;
+	private face: Face;
 	private triangle: Triangle;
 	private trail: Trail;
 	private particles: Particles;
@@ -99,6 +101,13 @@ export class World extends THREE.Object3D {
 		this.powerMeshAll.push( this.floor );
 
 		/*-------------------------------
+			Face
+		-------------------------------*/
+
+		this.face = new Face( this.customRoot.getObjectByName( 'Face' ) as THREE.Mesh, this.commonUniforms );
+		this.powerMeshAll.push( this.face );
+
+		/*-------------------------------
 			Triangle
 		-------------------------------*/
 
@@ -128,38 +137,37 @@ export class World extends THREE.Object3D {
 		-------------------------------*/
 
 		this.turingPattern = new TuringPatternRenderer( this.renderer, this.commonUniforms );
-		this.add( this.turingPattern );
 
 		/*-------------------------------
 			PowerMeshes
 		-------------------------------*/
 
-		// let applyPowerMesh = ( objList: THREE.Object3D[] ) => {
+		let applyPowerMesh = ( objList: THREE.Object3D[] ) => {
 
-		// 	objList.forEach( item => {
+			objList.forEach( item => {
 
-		// 		let mesh = item as THREE.Mesh;
+				let mesh = item as THREE.Mesh;
 
-		// 		if ( mesh.isMesh ) {
+				if ( mesh.isMesh ) {
 
-		// 			mesh = new PowerMesh( mesh, {
-		// 				uniforms: this.commonUniforms
-		// 			}, true );
+					mesh = new PowerMesh( mesh, {
+						uniforms: this.commonUniforms
+					}, true );
 
-		// 			mesh.castShadow = true;
-		// 			mesh.receiveShadow = true;
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
 
-		// 			this.powerMeshAll.push( mesh as PowerMesh );
+					this.powerMeshAll.push( mesh as PowerMesh );
 
-		// 		}
+				}
 
-		// 		applyPowerMesh( mesh.children.slice() );
+				applyPowerMesh( mesh.children.slice() );
 
-		// 	} );
+			} );
 
-		// };
+		};
 
-		// applyPowerMesh( this.commonRoot.children.slice() );
+		applyPowerMesh( this.commonRoot.children.slice() );
 
 	}
 
@@ -168,6 +176,8 @@ export class World extends THREE.Object3D {
 		this.trail.update( deltaTime );
 
 		this.turingPattern.update( deltaTime );
+
+		this.face.turing = this.turingPattern.texture;
 
 	}
 
@@ -179,7 +189,7 @@ export class World extends THREE.Object3D {
 
 		} );
 
-		// this.trail.updateEnvMap( envMap );
+		this.trail.updateEnvMap( envMap );
 
 	}
 

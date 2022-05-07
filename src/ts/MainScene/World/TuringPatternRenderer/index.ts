@@ -14,11 +14,13 @@ export class TuringPatternRenderer extends THREE.Object3D {
 
 	private gCon: ORE.GPUComputationController;
 	private kernel: ORE.GPUComputationKernel;
-	private datas: ORE.GPUcomputationData;
+	private state: ORE.GPUcomputationData;
+
+	public texture: THREE.Texture;
 
 	private params = {
-		f: 0.022,
-		k: 0.051
+		f: 0.02576,
+		k: 0.0570
 	};
 
 	constructor( renderer: THREE.WebGLRenderer, parentUniforms: ORE.Uniforms ) {
@@ -36,9 +38,14 @@ export class TuringPatternRenderer extends THREE.Object3D {
 			GPUController
 		-------------------------------*/
 
-		this.gCon = new ORE.GPUComputationController( renderer, new THREE.Vector2( 256, 256 ) );
+		this.gCon = new ORE.GPUComputationController( renderer, new THREE.Vector2( 128, 128 ) );
 
-		this.datas = this.gCon.createData( this.setInitData( this.gCon.createInitializeTexture() ) );
+		this.state = this.gCon.createData( this.setInitData( this.gCon.createInitializeTexture() ), {
+			magFilter: THREE.LinearFilter,
+			minFilter: THREE.LinearFilter,
+		} );
+
+		this.texture = this.state.buffer.texture;
 
 		this.kernel = this.gCon.createKernel( {
 			fragmentShader: turingPattern,
@@ -47,14 +54,13 @@ export class TuringPatternRenderer extends THREE.Object3D {
 					value: null
 				},
 				f: {
-					value: 0
+					value: this.params.f
 				},
 				k: {
-					value: 0
+					value: this.params.k
 				}
 			} )
 		} );
-
 
 		/*-------------------------------
 			Pane
@@ -63,7 +69,7 @@ export class TuringPatternRenderer extends THREE.Object3D {
 		let pane = new Pane();
 
 		pane.addInput( this.params, 'f', {
-			min: 0, max: 0.1
+			min: 0.02, max: 0.09, step: 0.0001
 		} ).on( 'change', ( e ) => {
 
 			this.kernel.uniforms.f.value = e.value;
@@ -71,7 +77,7 @@ export class TuringPatternRenderer extends THREE.Object3D {
 		} );
 
 		pane.addInput( this.params, 'k', {
-			min: 0, max: 0.1
+			min: 0.04, max: 0.08, step: 0.0001
 		} ).on( 'change', ( e ) => {
 
 			this.kernel.uniforms.k.value = e.value;
@@ -100,11 +106,14 @@ export class TuringPatternRenderer extends THREE.Object3D {
 
 				let index = ( i * texture.image.width + j ) * 4;
 
-				texture.image.data[ index + 0 ] = Math.random();
-				texture.image.data[ index + 1 ] = Math.random();
+				let p = new THREE.Vector2( j / texture.image.width, i / texture.image.height );
+				p.add( new THREE.Vector2( - 0.2, - 1.0 ) );
+				let d = 1.0 - ORE.Easings.smoothstep( 0.1, 0.11, p.length() );
+
+				texture.image.data[ index + 0 ] = 1 - d * 0.8 * Math.random();
+				texture.image.data[ index + 1 ] = 0 + d * 0.25 * Math.random();
 				texture.image.data[ index + 2 ] = 0.0;
 				texture.image.data[ index + 3 ] = 0.0;
-
 
 			}
 
@@ -116,10 +125,17 @@ export class TuringPatternRenderer extends THREE.Object3D {
 
 	public update( deltaTime: number ) {
 
-		this.kernel.uniforms.backBuffer.value = this.datas.buffer.texture;
-		this.gCon.compute( this.kernel, this.datas );
+		for ( let i = 0; i < 30; i ++ ) {
 
-		this.commonUniforms.tex.value = this.datas.buffer.texture;
+			this.kernel.uniforms.backBuffer.value = this.state.buffer.texture;
+
+			this.gCon.compute( this.kernel, this.state );
+
+			this.commonUniforms.tex.value = this.state.buffer.texture;
+
+		}
+
+		this.texture = this.state.buffer.texture;
 
 	}
 
