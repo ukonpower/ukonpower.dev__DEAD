@@ -37,8 +37,8 @@ export class World extends THREE.Object3D {
 	private turingPatternPreset: {feed: number, kill: number}[] = [
 		{ feed: 0.0258, kill: 0.0517 },
 		{ feed: 0.0421, kill: 0.0604 },
-		{ feed: 0.0691, kill: 0.06 },
 		{ feed: 0.0261, kill: 0.0604 },
+		{ feed: 0.02, kill: 0.0504 },
 	];
 
 	// powermesh
@@ -68,7 +68,9 @@ export class World extends THREE.Object3D {
 
 			let setting = this.turingPatternPreset[ Math.floor( Math.random() * this.turingPatternPreset.length ) ];
 
-			this.animator.animate( 'turingSetting', new THREE.Vector2( setting.feed, setting.kill ) );
+			this.animator.animate( 'turingSetting', new THREE.Vector2( setting.feed, setting.kill ), 5 );
+			this.turingPattern.noise( 5 );
+			this.face.noise( 5 );
 
 		}, 5000 );
 
@@ -207,7 +209,7 @@ export class World extends THREE.Object3D {
 
 	}
 
-	public update( deltaTime: number ) {
+	public update( deltaTime: number, time: number ) {
 
 		/*-------------------------------
 			Trail
@@ -232,6 +234,7 @@ export class World extends THREE.Object3D {
 		this.turingPattern.update( deltaTime );
 
 		this.face.turing = this.turingPattern.texture;
+		this.face.rotation.y = Math.sin( time * 0.3 ) * 0.5;
 
 	}
 

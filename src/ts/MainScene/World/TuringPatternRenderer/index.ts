@@ -25,6 +25,8 @@ export class TuringPatternRenderer extends THREE.Object3D {
 		k: 0.0517
 	};
 
+	private animator: ORE.Animator;
+
 	constructor( renderer: THREE.WebGLRenderer, parentUniforms: ORE.Uniforms ) {
 
 		super();
@@ -33,7 +35,23 @@ export class TuringPatternRenderer extends THREE.Object3D {
 		this.commonUniforms = ORE.UniformsLib.mergeUniforms( parentUniforms, {
 			tex: {
 				value: null
-			}
+			},
+		} );
+
+		/*-------------------------------
+			Animator
+		-------------------------------*/
+
+		this.animator = window.gManager.animator;
+
+		this.commonUniforms.noiseX = this.animator.add( {
+			name: 'turingNoiseX',
+			initValue: new THREE.Vector2( 1.0, 1.0 )
+		} );
+
+		this.commonUniforms.noiseY = this.animator.add( {
+			name: 'turingNoiseY',
+			initValue: new THREE.Vector2( 1.0, 1.0 )
 		} );
 
 		/*-------------------------------
@@ -154,6 +172,13 @@ export class TuringPatternRenderer extends THREE.Object3D {
 		this.params.k = value;
 
 		this.pane.refresh();
+
+	}
+
+	public noise( duration: number = 5.0 ) {
+
+		this.animator.animate( 'turingNoiseX', new THREE.Vector2( Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5 ), duration );
+		this.animator.animate( 'turingNoiseY', new THREE.Vector2( Math.random() * 0.5 + 0.5, Math.random() * 0.5 + 0.5 ), duration );
 
 	}
 

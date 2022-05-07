@@ -136,7 +136,7 @@ export class MainScene extends ORE.BaseLayer {
 
 		if ( this.world ) {
 
-			this.world.update( deltaTime );
+			this.world.update( deltaTime, this.time );
 
 		}
 

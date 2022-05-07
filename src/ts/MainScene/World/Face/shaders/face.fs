@@ -1,14 +1,16 @@
-varying vec2 vUv;
 varying vec3 vTangent;
+varying vec2 vUv;
 varying vec3 vBitangent;
 
 uniform sampler2D turingTex;
 uniform vec2 turingSize;
+uniform float noise;
 
 /*-------------------------------
 	Require
 -------------------------------*/
 
+#pragma glslify: hsv2rgb = require('./hsv2rgb.glsl' )
 #include <packing>
 
 vec2 packing16( float value ) { 
@@ -486,9 +488,11 @@ void main( void ) {
 		Turing Pattern
 	-------------------------------*/
 
-	float turing =  texture2D( turingTex, vUv ).x;
-	// mat.albedo = mix( mat.albedo, vec3( 0.2, 0.0, 0.0 ), turing );
-	// mat.metalness = turing;
+	float turing = texture2D( turingTex, vUv ).x;
+
+	float turingClolor = smoothstep( 1.0, 0.3, turing );
+	mat.albedo = mix( mat.albedo, vec3( 1.0 ), turingClolor );
+	mat.metalness = smoothstep( 0.5, 0.3, turing ) * 0.5;
 
 	vec2 turingPixel = vec2( 1.0 ) / turingSize;
 
