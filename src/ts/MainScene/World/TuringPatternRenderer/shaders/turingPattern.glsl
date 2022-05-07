@@ -27,11 +27,12 @@ void main( void ) {
 	float du = D.x * A.x - B + f * ( 1.0 - center.x ); 
 	float dv = D.y * A.y + B - center.y * ( f + k ); 
 
-	// du = D.x * A.x;
-	// dv = D.y * A.y;
-
 	float nextU = center.x + du * dt;
 	float nextV = center.y + dv * dt;
+
+	float len = smoothstep( 0.499, 1.0, length( vUv - vec2( 0.5, 0.6) ));
+	nextU = mix(nextU, 0.5, len);
+	nextV = mix(nextV, 0.25, len);
 
 	gl_FragColor = vec4( nextU, nextV, 0.0, 0.0 );
 

@@ -30,8 +30,8 @@ export class CameraController {
 
 		this.camera.position.copy( this.cameraTransform.position );
 
-		// this.controls = new OrbitControls( this.camera, document.querySelector( '#canvas' ) as HTMLCanvasElement );
-		// this.controls.target = ( this.cameraTarget.position );
+		this.controls = new OrbitControls( this.camera, document.querySelector( '#canvas' ) as HTMLCanvasElement );
+		this.controls.target = ( this.cameraTarget.position );
 
 	}
 

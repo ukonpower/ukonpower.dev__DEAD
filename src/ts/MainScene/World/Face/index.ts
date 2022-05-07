@@ -3,6 +3,7 @@ import * as ORE from 'ore-three-ts';
 
 import { PowerMesh } from 'power-mesh';
 
+import faceVert from './shaders/face.vs';
 import faceFrag from './shaders/face.fs';
 
 export class Face extends PowerMesh {
@@ -17,6 +18,7 @@ export class Face extends PowerMesh {
 
 		super( mesh, {
 			fragmentShader: faceFrag,
+			vertexShader: faceVert,
 			uniforms: uni
 		}, true );
 

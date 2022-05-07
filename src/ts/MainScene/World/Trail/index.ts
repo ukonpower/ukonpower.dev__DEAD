@@ -34,8 +34,8 @@ export class Trail extends PowerMesh {
 	constructor( renderer: THREE.WebGLRenderer, num: number, length: number, parentUniforms: ORE.Uniforms ) {
 
 		let commonUniforms = ORE.UniformsLib.mergeUniforms( parentUniforms, {
-			dataSize: {
-				value: new THREE.Vector2( length, num )
+			deltaTime: {
+				value: 1
 			},
 		} );
 
@@ -228,6 +228,8 @@ export class Trail extends PowerMesh {
 	}
 
 	public update( deltaTime: number ) {
+
+		this.commonUniforms.deltaTime.value = deltaTime;
 
 		this.kernels.velocity.uniforms.dataPos.value = this.datas.position.buffer.texture;
 		this.kernels.velocity.uniforms.dataVel.value = this.datas.velocity.buffer.texture;

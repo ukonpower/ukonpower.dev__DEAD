@@ -17,10 +17,12 @@ export class TuringPatternRenderer extends THREE.Object3D {
 	private state: ORE.GPUcomputationData;
 
 	public texture: THREE.Texture;
+	public size: THREE.Vector2 = new THREE.Vector2( 128, 128 );
 
+	private pane: Pane;
 	private params = {
-		f: 0.02576,
-		k: 0.0570
+		f: 0.0258,
+		k: 0.0517
 	};
 
 	constructor( renderer: THREE.WebGLRenderer, parentUniforms: ORE.Uniforms ) {
@@ -38,7 +40,7 @@ export class TuringPatternRenderer extends THREE.Object3D {
 			GPUController
 		-------------------------------*/
 
-		this.gCon = new ORE.GPUComputationController( renderer, new THREE.Vector2( 128, 128 ) );
+		this.gCon = new ORE.GPUComputationController( renderer, this.size );
 
 		this.state = this.gCon.createData( this.setInitData( this.gCon.createInitializeTexture() ), {
 			magFilter: THREE.LinearFilter,
@@ -66,9 +68,9 @@ export class TuringPatternRenderer extends THREE.Object3D {
 			Pane
 		-------------------------------*/
 
-		let pane = new Pane();
+		this.pane = new Pane();
 
-		pane.addInput( this.params, 'f', {
+		this.pane.addInput( this.params, 'f', {
 			min: 0.02, max: 0.09, step: 0.0001
 		} ).on( 'change', ( e ) => {
 
@@ -76,7 +78,7 @@ export class TuringPatternRenderer extends THREE.Object3D {
 
 		} );
 
-		pane.addInput( this.params, 'k', {
+		this.pane.addInput( this.params, 'k', {
 			min: 0.04, max: 0.08, step: 0.0001
 		} ).on( 'change', ( e ) => {
 
@@ -107,8 +109,8 @@ export class TuringPatternRenderer extends THREE.Object3D {
 				let index = ( i * texture.image.width + j ) * 4;
 
 				let p = new THREE.Vector2( j / texture.image.width, i / texture.image.height );
-				p.add( new THREE.Vector2( - 0.2, - 1.0 ) );
-				let d = 1.0 - ORE.Easings.smoothstep( 0.1, 0.11, p.length() );
+				p.add( new THREE.Vector2( - 0.5, - 0.6 ) );
+				let d = ORE.Easings.smoothstep( 0.49, 0.5, p.length() );
 
 				texture.image.data[ index + 0 ] = 1 - d * 0.8 * Math.random();
 				texture.image.data[ index + 1 ] = 0 + d * 0.25 * Math.random();
@@ -125,7 +127,7 @@ export class TuringPatternRenderer extends THREE.Object3D {
 
 	public update( deltaTime: number ) {
 
-		for ( let i = 0; i < 30; i ++ ) {
+		for ( let i = 0; i < 5; i ++ ) {
 
 			this.kernel.uniforms.backBuffer.value = this.state.buffer.texture;
 
@@ -136,6 +138,22 @@ export class TuringPatternRenderer extends THREE.Object3D {
 		}
 
 		this.texture = this.state.buffer.texture;
+
+	}
+
+	public set feed( value: number ) {
+
+		this.params.f = value;
+
+		this.pane.refresh();
+
+	}
+
+	public set kill( value: number ) {
+
+		this.params.k = value;
+
+		this.pane.refresh();
 
 	}
 

@@ -15,6 +15,7 @@ export class World extends THREE.Object3D {
 	private renderer: THREE.WebGLRenderer;
 	private scene: THREE.Scene;
 	private commonUniforms: ORE.Uniforms;
+	private animator: ORE.Animator;
 
 	private background: Background;
 
@@ -29,7 +30,16 @@ export class World extends THREE.Object3D {
 	private triangle: Triangle;
 	private trail: Trail;
 	private particles: Particles;
+
+	// turingpattern
+
 	private turingPattern: TuringPatternRenderer;
+	private turingPatternPreset: {feed: number, kill: number}[] = [
+		{ feed: 0.0258, kill: 0.0517 },
+		{ feed: 0.0421, kill: 0.0604 },
+		{ feed: 0.0691, kill: 0.06 },
+		{ feed: 0.0261, kill: 0.0604 },
+	];
 
 	// powermesh
 
@@ -43,7 +53,33 @@ export class World extends THREE.Object3D {
 		this.scene = scene;
 
 		this.commonUniforms = ORE.UniformsLib.mergeUniforms( parentUniforms, {
+			turingSize: {
+				value: new THREE.Vector2()
+			}
 		} );
+
+		/*-------------------------------
+			Animator
+		-------------------------------*/
+
+		this.animator = window.gManager.animator;
+
+		window.setInterval( () => {
+
+			let setting = this.turingPatternPreset[ Math.floor( Math.random() * this.turingPatternPreset.length ) ];
+
+			this.animator.animate( 'turingSetting', new THREE.Vector2( setting.feed, setting.kill ) );
+
+		}, 5000 );
+
+		this.animator.add( {
+			name: 'turingSetting',
+			initValue: new THREE.Vector2( this.turingPatternPreset[ 0 ].feed, this.turingPatternPreset[ 0 ].kill )
+		} );
+
+		/*-------------------------------
+			Roots
+		-------------------------------*/
 
 		this.commonRoot = this.scene.getObjectByName( 'Common' ) as THREE.Object3D;
 		this.customRoot = this.scene.getObjectByName( 'Custom' ) as THREE.Object3D;
@@ -119,7 +155,6 @@ export class World extends THREE.Object3D {
 
 		this.trail = new Trail( this.renderer, 50, 30, this.commonUniforms );
 		this.trail.castShadow = true;
-		this.trail.receiveShadow = true;
 		this.trail.position.set( 0.0, 6.0, 5.0 );
 		this.scene.add( this.trail );
 
@@ -137,6 +172,7 @@ export class World extends THREE.Object3D {
 		-------------------------------*/
 
 		this.turingPattern = new TuringPatternRenderer( this.renderer, this.commonUniforms );
+		this.commonUniforms.turingSize.value.copy( this.turingPattern.size );
 
 		/*-------------------------------
 			PowerMeshes
@@ -173,7 +209,25 @@ export class World extends THREE.Object3D {
 
 	public update( deltaTime: number ) {
 
+		/*-------------------------------
+			Trail
+		-------------------------------*/
+
 		this.trail.update( deltaTime );
+
+		/*-------------------------------
+			TuringPattern
+		-------------------------------*/
+
+
+		if ( this.animator.isAnimatingVariable( 'turingSetting' ) ) {
+
+			let turingSetting = this.animator.get( 'turingSetting' ) as THREE.Vector2;
+
+			this.turingPattern.feed = turingSetting.x;
+			this.turingPattern.kill = turingSetting.y;
+
+		}
 
 		this.turingPattern.update( deltaTime );
 

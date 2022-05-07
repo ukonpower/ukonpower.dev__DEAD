@@ -1,5 +1,6 @@
 uniform float time;
 uniform float seed;
+uniform float deltaTime;
 
 uniform vec2 dataSize;
 uniform sampler2D dataPos;
@@ -24,7 +25,7 @@ void main() {
       snoise( vec4( p, 7.225 + time )  ),
       snoise( vec4( p, 3.553 + time )  ),
       snoise( vec4( p, 1.259 + time )  )
-    ) * 0.9;
+    ) * 0.9 * deltaTime;
 
 	//gravity
     vec3 gpos = pos;

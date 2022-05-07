@@ -3,6 +3,7 @@ varying vec3 vTangent;
 varying vec3 vBitangent;
 
 uniform sampler2D turingTex;
+uniform vec2 turingSize;
 
 /*-------------------------------
 	Require
@@ -471,9 +472,6 @@ void main( void ) {
 	
 	#endif
 
-	float turing = smoothstep( 1.0, 0.0, texture2D( turingTex, vUv ).x );
-	mat.albedo = mix( mat.albedo, vec3( 0.5, 0.0, 0.0 ), turing );
-
 	#ifdef USE_ALPHA_MAP
 
 		mat.opacity = texture2D( alphaMap, vUv ).x;
@@ -483,6 +481,24 @@ void main( void ) {
 		mat.opacity = opacity;
 
 	#endif
+
+	/*-------------------------------
+		Turing Pattern
+	-------------------------------*/
+
+	float turing =  texture2D( turingTex, vUv ).x;
+	// mat.albedo = mix( mat.albedo, vec3( 0.2, 0.0, 0.0 ), turing );
+	// mat.metalness = turing;
+
+	vec2 turingPixel = vec2( 1.0 ) / turingSize;
+
+	float turingTop = texture2D( turingTex, vUv + vec2( 0.0, turingPixel.y ) ).x;
+	float turingBottom = texture2D( turingTex, vUv - vec2( 0.0, turingPixel.y ) ).x;
+	float turingLeft = texture2D( turingTex, vUv - vec2( turingPixel.x, 0.0 ) ).x;
+	float turingRight = texture2D( turingTex, vUv + vec2( turingPixel.x, 0.0 )).x;
+
+	float turingDX = turingLeft - turingRight;
+	float turingDY = turingTop - turingBottom;
 	
 	if( mat.opacity < 0.5 ) discard;
 
@@ -518,25 +534,21 @@ void main( void ) {
 	geo.viewDirWorld = normalize( geo.posWorld - cameraPosition );
 	geo.normal = normalize( vNormal ) * faceDirection;
 
-	#ifdef USE_NORMAL_MAP
-		
-		vec3 tangent = normalize( vTangent );
-		vec3 bitangent = normalize( vBitangent );
 
-		#ifdef DOUBLE_SIDED
+	vec3 tangent = normalize( vTangent );
+	vec3 bitangent = normalize( vBitangent );
 
-			tangent *= faceDirection;
-			bitangent *= faceDirection;
-		
-		#endif
-		
-		mat3 vTBN = mat3( tangent, bitangent, geo.normal );
-		
-		vec3 mapN = texture2D( normalMap, vUv ).xyz;
-		mapN = mapN * 2.0 - 1.0;
-		geo.normal = normalize( vTBN * mapN );
+	#ifdef DOUBLE_SIDED
 
+		tangent *= faceDirection;
+		bitangent *= faceDirection;
+	
 	#endif
+	
+	mat3 vTBN = mat3( tangent, bitangent, geo.normal );
+	
+	vec3 mapN = normalize( vec3( turingDX, turingDY, 1.0 ) );
+	geo.normal = normalize( vTBN * mapN );
 	
 	geo.normalWorld = normalize( ( vec4( geo.normal, 0.0 ) * viewMatrix ).xyz );
 
