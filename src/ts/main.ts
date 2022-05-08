@@ -38,6 +38,7 @@ class APP {
 		this.controller.addLayer( new MainScene(), {
 			name: 'Main',
 			canvas: this.canvas || undefined,
+			wrapperElement: document.querySelector( '.canvas-inner' ) as HTMLElement,
 			pixelRatio: Math.max( 1.0, window.devicePixelRatio * 0.5 ),
 		} );
 

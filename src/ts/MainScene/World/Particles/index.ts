@@ -10,7 +10,7 @@ export class Particles extends THREE.Points {
 
 	constructor( parentUniforms?: ORE.Uniforms ) {
 
-		let range = new THREE.Vector3( 1.5, 1.0, 2.0 );
+		let range = new THREE.Vector3( 5.0, 2.0, 2.0 );
 
 		let num = 30;
 		let offsetPosArray: number[] = [];

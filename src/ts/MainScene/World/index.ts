@@ -155,9 +155,9 @@ export class World extends THREE.Object3D {
 			Trail
 		-------------------------------*/
 
-		this.trail = new Trail( this.renderer, 50, 30, this.commonUniforms );
+		this.trail = new Trail( this.renderer, 30, 30, this.commonUniforms );
 		this.trail.castShadow = true;
-		this.trail.position.set( 0.0, 6.0, 5.0 );
+		this.trail.position.set( 0.0, 8.0, 5.0 );
 		this.scene.add( this.trail );
 
 		/*-------------------------------
