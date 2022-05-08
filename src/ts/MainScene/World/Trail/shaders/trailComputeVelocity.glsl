@@ -9,6 +9,7 @@ uniform sampler2D dataVel;
 #pragma glslify: import('./constants.glsl' )
 #pragma glslify: atan2 = require('./atan2.glsl' )
 #pragma glslify: snoise = require('./noise4D.glsl' )
+#pragma glslify: random = require('./random.glsl' )
 
 void main() {
     if(gl_FragCoord.x >= 1.0) return;    
@@ -29,7 +30,7 @@ void main() {
 
 	//gravity
     vec3 gpos = pos;
-    vel += -(gpos) * length(gpos) * 0.001;
+    vel += -(gpos + vec3( 0.0, (random(uv) - 0.5) * 8.0, 0.0 ) ) * length(gpos) * 0.001;
 
 	vec3 opos = pos;
 	vel.xz += smoothstep( 11.0, 7.0, length( opos.xz ) ) * ( opos.xz );
