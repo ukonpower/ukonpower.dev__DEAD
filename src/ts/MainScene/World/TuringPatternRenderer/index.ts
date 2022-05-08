@@ -19,7 +19,7 @@ export class TuringPatternRenderer extends THREE.Object3D {
 	public texture: THREE.Texture;
 	public size: THREE.Vector2 = new THREE.Vector2( 128, 128 );
 
-	private pane: Pane;
+	private pane?: Pane;
 	private params = {
 		f: 0.0258,
 		k: 0.0517
@@ -86,23 +86,23 @@ export class TuringPatternRenderer extends THREE.Object3D {
 			Pane
 		-------------------------------*/
 
-		this.pane = new Pane();
+		// this.pane = new Pane();
 
-		this.pane.addInput( this.params, 'f', {
-			min: 0.02, max: 0.09, step: 0.0001
-		} ).on( 'change', ( e ) => {
+		// this.pane.addInput( this.params, 'f', {
+		// 	min: 0.02, max: 0.09, step: 0.0001
+		// } ).on( 'change', ( e ) => {
 
-			this.kernel.uniforms.f.value = e.value;
+		// 	this.kernel.uniforms.f.value = e.value;
 
-		} );
+		// } );
 
-		this.pane.addInput( this.params, 'k', {
-			min: 0.04, max: 0.08, step: 0.0001
-		} ).on( 'change', ( e ) => {
+		// this.pane.addInput( this.params, 'k', {
+		// 	min: 0.04, max: 0.08, step: 0.0001
+		// } ).on( 'change', ( e ) => {
 
-			this.kernel.uniforms.k.value = e.value;
+		// 	this.kernel.uniforms.k.value = e.value;
 
-		} );
+		// } );
 
 		/*-------------------------------
 			Mesh
@@ -161,17 +161,32 @@ export class TuringPatternRenderer extends THREE.Object3D {
 
 	public set feed( value: number ) {
 
-		this.params.f = value;
 
-		this.pane.refresh();
+		if ( this.pane ) {
+
+			this.params.f = value;
+			this.pane.refresh();
+
+		} else {
+
+			this.kernel.uniforms.f.value = value;
+
+		}
 
 	}
 
 	public set kill( value: number ) {
 
-		this.params.k = value;
+		if ( this.pane ) {
 
-		this.pane.refresh();
+			this.params.k = value;
+			this.pane.refresh();
+
+		} else {
+
+			this.kernel.uniforms.k.value = value;
+
+		}
 
 	}
 
