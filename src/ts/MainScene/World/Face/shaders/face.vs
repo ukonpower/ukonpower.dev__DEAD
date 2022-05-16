@@ -1,6 +1,9 @@
 attribute vec4 tangent;
 
 uniform sampler2D turingTex;
+uniform sampler2D noiseTex;
+uniform float time;
+uniform float visibility;
 
 varying vec2 vUv;
 varying vec3 vNormal;
@@ -10,6 +13,10 @@ varying vec3 vBitangent;
 varying vec3 vViewPos;
 varying vec3 vWorldPos;
 varying vec2 vHighPrecisionZW;
+
+varying float vVisibility;
+
+#pragma glslify: rotate = require('./rotate.glsl' )
 
 /*-------------------------------
 	ShadowMap
@@ -24,6 +31,20 @@ void main( void ) {
 	-------------------------------*/
 
 	vec3 pos = position;
+
+	float noise = texture2D( noiseTex, uv * 0.7 * 0.1 ).x;
+	float resw = smoothstep( 0.0, 0.5, -1.0 + uv.y - noise + visibility * 2.2 );
+	vVisibility = step( 0.1, resw );
+
+
+	if( resw < 0.9 ) {
+		// pos.xyz += 0.5;
+		float res = (floor( resw * 10.0 ) / 10.0) * 100.0 + noise * 15.0;
+		pos.xyz = floor( pos * res ) / res;
+		// pos.xyz -= 0.5;
+	}
+
+
 
 	pos *= 1.0 + ( 1.0 - texture2D( turingTex, uv ).x ) * 0.05;
 	

@@ -36,7 +36,13 @@ export class MainScene extends ORE.BaseLayer {
 		-------------------------------*/
 
 		this.gManager.assetManager.load( { assets: [
-			{ name: 'scene', path: './assets/scene/ukonpower.glb', type: 'gltf' }
+			{ name: 'scene', path: './assets/scene/ukonpower.glb', type: 'gltf' },
+			{ name: 'noise', path: './assets/scene/img/noise.png', type: 'tex', onLoad: ( t: THREE.Texture ) => {
+
+				t.wrapS = THREE.RepeatWrapping;
+				t.wrapT = THREE.RepeatWrapping;
+
+			} }
 		] } );
 
 		this.gManager.assetManager.addEventListener( 'loadMustAssets', ( e ) => {
@@ -92,38 +98,59 @@ export class MainScene extends ORE.BaseLayer {
 
 		this.connector.addListener( 'update/scene', ( connector: ORE.BlenderConnector ) => {
 
-			console.log( connector );
+			/*-------------------------------
+				Camera
+			-------------------------------*/
+
 			let cameraAction = connector.getAction( 'CameraAction' );
+			let cameraTargetAction = connector.getAction( 'CameraTargetAction' );
+			let lensAction = connector.getAction( 'CameraAction.001' );
 
-			if ( cameraAction ) {
+			if ( cameraAction && cameraTargetAction && lensAction && this.cameraController ) {
 
-				cameraAction.addListener( 'update', ( action: ORE.AnimationAction ) => {
-
-				} );
+				this.cameraController.setAction( cameraAction, cameraTargetAction, lensAction );
 
 			}
 
+			/*-------------------------------
+				World
+			-------------------------------*/
 
+			let faceMaterialAction = connector.getActionContainsAccessor( 'FaceVisibility' );
+
+			if ( this.world && faceMaterialAction ) {
+
+				this.world.face.setAction( faceMaterialAction );
+
+			}
 
 		} );
 
 		this.connector.addListener( 'update/timeline', ( current: number ) => {
 
+			if ( this.cameraController ) {
 
+				this.cameraController.updateFrame( current );
+
+				if ( this.world ) {
+
+					this.world.face.updateFrame( current );
+
+				}
+
+			}
 
 		} );
 
-		if ( true ) {
+		if ( false ) {
 
-			this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
+			// this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
 
 		} else {
 
 			this.connector.connect( 'ws://localhost:3100' );
 
 		}
-
-
 
 		/*-------------------------------
 			Renderer

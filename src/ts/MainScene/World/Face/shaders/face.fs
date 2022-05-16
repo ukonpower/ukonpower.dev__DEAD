@@ -3,8 +3,11 @@ varying vec2 vUv;
 varying vec3 vBitangent;
 
 uniform sampler2D turingTex;
+uniform sampler2D noiseTex;
 uniform vec2 turingSize;
 uniform float noise;
+uniform float visibility;
+varying float vVisibility;
 
 /*-------------------------------
 	Require
@@ -484,12 +487,20 @@ void main( void ) {
 
 	#endif
 
+	vec2 bUv = vUv;
+	float noisee = texture2D( noiseTex, vec2( vUv.x ) ).x * 1.0 + 1.0;
+
+	bUv.x = floor( (bUv.x) * (100.0) ) / (100.0);
+	float borderNoise = smoothstep( 0.2 , 0.8, texture2D( noiseTex, vec2(bUv.x * 5.0 ) ).x );
+	float yVisibility = smoothstep( 0.0, 1.0, -borderNoise * 0.7 + visibility * 1.7 );
+	float borderVisibility = smoothstep( 0.0, 0.2, -1.0 + bUv.y + yVisibility * 1.2 );
+	mat.opacity = smoothstep( 0.0, 0.5, borderVisibility);
+
 	/*-------------------------------
 		Turing Pattern
 	-------------------------------*/
 
 	float turing = texture2D( turingTex, vUv ).x;
-
 	float turingClolor = smoothstep( 1.0, 0.3, turing );
 	mat.albedo = mix( mat.albedo, vec3( 1.0 ), turingClolor );
 	mat.metalness = smoothstep( 0.5, 0.3, turing ) * 0.5;
@@ -504,8 +515,6 @@ void main( void ) {
 	float turingDX = turingLeft - turingRight;
 	float turingDY = turingTop - turingBottom;
 	
-	if( mat.opacity < 0.5 ) discard;
-
 	mat.diffuseColor = mix( mat.albedo, vec3( 0.0, 0.0, 0.0 ), mat.metalness );
 	mat.specularColor = mix( vec3( 1.0, 1.0, 1.0 ), mat.albedo, mat.metalness );
 
@@ -694,6 +703,9 @@ void main( void ) {
 		outColor += emission;
 
 	#endif
+
+	float v = smoothstep( 1.0, 0.0, borderVisibility );
+	outColor += hsv2rgb( vec3( v * 0.5 + 0.2, 0.7, v ) );// * vec3( 3.5, 1.0, 0.7 );
 
 	gl_FragColor = vec4( outColor, outOpacity );
 

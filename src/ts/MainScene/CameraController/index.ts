@@ -2,8 +2,9 @@ import * as THREE from 'three';
 import * as ORE from 'ore-three';
 
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import EventEmitter from 'wolfy87-eventemitter';
 
-export class CameraController {
+export class CameraController extends EventEmitter {
 
 	private camera: THREE.PerspectiveCamera;
 	private cameraTransform: THREE.Object3D;
@@ -16,9 +17,28 @@ export class CameraController {
 
 	private controls?: OrbitControls;
 
+	private baseFov: number;
+	private focalLength: number;
+
+	private layerInfoMem: ORE.LayerInfo | null;
+
+	/*-------------------------------
+		Animation
+	-------------------------------*/
+
+	private cameraAction?: ORE.AnimationAction | null = null;
+	private cameraTargetAction?: ORE.AnimationAction | null = null;
+	private lensAction?: ORE.AnimationAction | null = null;
+
 	constructor( camera: THREE.PerspectiveCamera, cameraContainer: THREE.Object3D, cameraTarget: THREE.Object3D ) {
 
+		super();
+
 		this.camera = camera;
+		this.baseFov = 30;
+		this.focalLength = 30;
+
+		this.layerInfoMem = null;
 
 		this.cameraTransform = cameraContainer;
 		this.cameraData = cameraContainer.children[ 0 ] as THREE.PerspectiveCamera;
@@ -26,7 +46,7 @@ export class CameraController {
 
 		this.cursorPos = new THREE.Vector2();
 		this.cursorPosDelay = new THREE.Vector2();
-		this.cameraMoveWeight = new THREE.Vector2( 1.0, 0.5 );
+		this.cameraMoveWeight = new THREE.Vector2( 0.1, 0.1 );
 
 		this.camera.position.copy( this.cameraTransform.position );
 
@@ -63,10 +83,96 @@ export class CameraController {
 
 	}
 
-	public resize( layerInfo: ORE.LayerInfo ) {
+	/*-------------------------------
+		BC Animation
+	-------------------------------*/
 
-		this.camera.fov = this.cameraData.fov + layerInfo.size.portraitWeight * 20.0;
-		this.camera.updateProjectionMatrix();
+	public setAction( cameraAction: ORE.AnimationAction, cameraTargetAction: ORE.AnimationAction, lensAction: ORE.AnimationAction ) {
+
+		this.emitEvent( 'updateAction' );
+
+		const onUpdateCameraAction = ( action: ORE.AnimationAction ) => {
+
+			action.getValue( 'CameraPos', this.cameraTransform.position );
+
+		};
+
+		const onUpdateCameraTargetAction = ( action: ORE.AnimationAction ) => {
+
+			action.getValue( 'CameraTargetPos', this.cameraTarget.position );
+
+
+		};
+
+		const onUpdateLensAction = ( action: ORE.AnimationAction ) => {
+
+			this.focalLength = action.getValue<number>( 'FocalLength' ) || this.focalLength;
+
+			this.resize();
+
+		};
+
+		cameraAction.addListener( 'update', onUpdateCameraAction );
+		cameraTargetAction.addListener( 'update', onUpdateCameraTargetAction );
+		lensAction.addListener( 'update', onUpdateLensAction );
+
+		this.addOnceListener( 'updateAction', () => {
+
+			cameraAction.removeListener( 'update', onUpdateCameraAction );
+			cameraTargetAction.removeListener( 'update', onUpdateCameraTargetAction );
+			lensAction.removeListener( 'update', onUpdateCameraAction );
+
+		} );
+
+		this.cameraAction = cameraAction;
+		this.cameraTargetAction = cameraTargetAction;
+		this.lensAction = lensAction;
+
+	}
+
+	public updateFrame( frame: number ) {
+
+		if ( this.cameraAction ) {
+
+			this.cameraAction.updateFrame( frame );
+
+		}
+
+		if ( this.cameraTargetAction ) {
+
+			this.cameraTargetAction.updateFrame( frame );
+
+		}
+
+		if ( this.lensAction ) {
+
+			this.lensAction.updateFrame( frame );
+
+		}
+
+	}
+
+	/*-------------------------------
+		Resize
+	-------------------------------*/
+
+	public resize( layerInfo?: ORE.LayerInfo ) {
+
+		if ( layerInfo ) {
+
+			this.layerInfoMem = layerInfo;
+
+		}
+
+
+		if ( this.layerInfoMem ) {
+
+			let fov = 2.0 * Math.atan( 36 / ( 2.0 * this.focalLength ) ) / Math.PI * 180.0;
+
+			this.camera.fov = fov / ( 16 / 9 ) + this.layerInfoMem.size.portraitWeight * 40.0;
+			this.camera.updateProjectionMatrix();
+
+		}
 
 	}
 

@@ -28,12 +28,12 @@ export class World extends THREE.Object3D {
 
 	//  custom mesh
 
-	private backNoise: BackNoise;
-	private floor: Floor;
-	private face: Face;
-	private triangle: Triangle;
-	private trail: Trail;
-	private particles: Particles;
+	public backNoise: BackNoise;
+	public floor: Floor;
+	public face: Face;
+	public triangle: Triangle;
+	public trail: Trail;
+	public particles: Particles;
 
 	// powermesh
 
