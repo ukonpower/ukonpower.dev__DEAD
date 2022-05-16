@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as ORE from 'ore-three-ts';
+import * as ORE from 'ore-three';
 
 import backgroundVert from './shaders/background.vs';
 import backgroundFrag from './shaders/background.fs';

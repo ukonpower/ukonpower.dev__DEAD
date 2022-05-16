@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as ORE from 'ore-three-ts';
+import * as ORE from 'ore-three';
 
 import backNoiseVert from './shaders/backNoise.vs';
 import backNoiseFrag from './shaders/backNoise.fs';

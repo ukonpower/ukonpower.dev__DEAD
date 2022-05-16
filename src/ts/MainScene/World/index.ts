@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as ORE from 'ore-three-ts';
+import * as ORE from 'ore-three';
 import { Background } from './Background';
 import { Floor } from './Floor';
 import { BackNoise } from './BackNoise';

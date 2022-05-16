@@ -1,4 +1,4 @@
-import * as ORE from 'ore-three-ts';
+import * as ORE from 'ore-three';
 import * as THREE from 'three';
 import { GlobalManager } from './GlobalManager';
 import { RenderPipeline } from './RenderPipeline';
@@ -88,8 +88,46 @@ export class MainScene extends ORE.BaseLayer {
 			Connector
 		-------------------------------*/
 
-		this.connector = new ORE.BlenderConnector( "ws://localhost:3000" );
-		this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
+		this.connector = new ORE.BlenderConnector();
+
+		this.connector.addListener( 'update/scene', ( connector: ORE.BlenderConnector ) => {
+
+			console.log( connector );
+			let cameraAction = connector.getAction( 'CameraAction' );
+
+			if ( cameraAction ) {
+
+				cameraAction.addListener( 'update', ( action: ORE.AnimationAction ) => {
+
+				} );
+
+			}
+
+
+
+		} );
+
+		this.connector.addListener( 'update/timeline', ( current: number ) => {
+
+
+
+		} );
+
+		if ( true ) {
+
+			this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
+
+		} else {
+
+			this.connector.connect( 'ws://localhost:3100' );
+
+		}
+
+
+
+		/*-------------------------------
+			Renderer
+		-------------------------------*/
 
 		if ( this.renderer ) {
 

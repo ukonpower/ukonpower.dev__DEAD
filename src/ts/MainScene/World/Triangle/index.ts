@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as ORE from 'ore-three-ts';
+import * as ORE from 'ore-three';
 
 import triangleVert from './shaders/triangle.vs';
 import triangleFrag from './shaders/triangle.fs';

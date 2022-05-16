@@ -8,10 +8,11 @@
   },
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/*/packages/*"
   ],
   "scripts": {
-    "dev": "npx gulp & npm run dev -w packages/power-mesh & npm run dev -w packages/ore-three-ts",
+    "dev": "npx gulp & npm run dev -w packages/power-mesh/packages/power-mesh & npm run dev -w packages/ore-three/packages/ore-three",
     "build": "npx gulp"
   },
   "author": "ukonpower",

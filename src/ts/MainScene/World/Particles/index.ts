@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as ORE from 'ore-three-ts';
+import * as ORE from 'ore-three';
 
 import particlesVert from './shaders/particles.vs';
 import particlesFrag from './shaders/particles.fs';

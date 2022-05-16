@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as ORE from 'ore-three-ts';
+import * as ORE from 'ore-three';
 
 import comPosition from './shaders/trailComputePosition.glsl';
 import comVelocity from './shaders/trailComputeVelocity.glsl';
