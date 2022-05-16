@@ -7,8 +7,8 @@ import { PowerMesh } from 'power-mesh';
 import { Triangle } from './Triangle';
 import { Trail } from './Trail';
 import { Particles } from './Particles';
-import { TuringPatternRenderer } from './TuringPatternRenderer';
 import { Face } from './Face';
+import { TuringPattern } from './TuringPattern';
 
 export class World extends THREE.Object3D {
 
@@ -22,6 +22,10 @@ export class World extends THREE.Object3D {
 	private customRoot: THREE.Object3D;
 	private commonRoot: THREE.Object3D;
 
+	// turing
+
+	private turingPattern: TuringPattern;
+
 	//  custom mesh
 
 	private backNoise: BackNoise;
@@ -30,16 +34,6 @@ export class World extends THREE.Object3D {
 	private triangle: Triangle;
 	private trail: Trail;
 	private particles: Particles;
-
-	// turingpattern
-
-	private turingPattern: TuringPatternRenderer;
-	private turingPatternPreset: {feed: number, kill: number}[] = [
-		{ feed: 0.0258, kill: 0.0517 },
-		{ feed: 0.0421, kill: 0.0604 },
-		{ feed: 0.0261, kill: 0.0604 },
-		{ feed: 0.02, kill: 0.0504 },
-	];
 
 	// powermesh
 
@@ -63,21 +57,6 @@ export class World extends THREE.Object3D {
 		-------------------------------*/
 
 		this.animator = window.gManager.animator;
-
-		window.setInterval( () => {
-
-			let setting = this.turingPatternPreset[ Math.floor( Math.random() * this.turingPatternPreset.length ) ];
-
-			this.animator.animate( 'turingSetting', new THREE.Vector2( setting.feed, setting.kill ), 5 );
-			this.turingPattern.noise( 5 );
-			this.face.noise( 5 );
-
-		}, 5000 );
-
-		this.animator.add( {
-			name: 'turingSetting',
-			initValue: new THREE.Vector2( this.turingPatternPreset[ 0 ].feed, this.turingPatternPreset[ 0 ].kill )
-		} );
 
 		/*-------------------------------
 			Roots
@@ -117,6 +96,11 @@ export class World extends THREE.Object3D {
 		// let cameraHelper = new THREE.CameraHelper( light.shadow.camera );
 		// this.scene.add( cameraHelper );
 
+		/*-------------------------------
+			TuringPattern
+		-------------------------------*/
+
+		this.turingPattern = new TuringPattern( this.renderer, this.commonUniforms );
 
 		/*-------------------------------
 			Background
@@ -173,8 +157,15 @@ export class World extends THREE.Object3D {
 			Turing Pattern
 		-------------------------------*/
 
-		this.turingPattern = new TuringPatternRenderer( this.renderer, this.commonUniforms );
-		this.commonUniforms.turingSize.value.copy( this.turingPattern.size );
+		this.turingPattern = new TuringPattern( this.renderer, this.commonUniforms );
+		this.commonUniforms.turingSize.value.copy( this.turingPattern.turingPatternRenderer.size );
+
+		window.setInterval( () => {
+
+			this.turingPattern.noise( 5 );
+			this.face.noise( 5 );
+
+		}, 5000 );
 
 		/*-------------------------------
 			PowerMeshes
@@ -221,19 +212,9 @@ export class World extends THREE.Object3D {
 			TuringPattern
 		-------------------------------*/
 
-
-		if ( this.animator.isAnimatingVariable( 'turingSetting' ) ) {
-
-			let turingSetting = this.animator.get( 'turingSetting' ) as THREE.Vector2;
-
-			this.turingPattern.feed = turingSetting.x;
-			this.turingPattern.kill = turingSetting.y;
-
-		}
-
 		this.turingPattern.update( deltaTime );
 
-		this.face.turing = this.turingPattern.texture;
+		this.face.turing = this.turingPattern.turingPatternRenderer.texture;
 		this.face.rotation.y = Math.sin( time * 0.3 ) * 0.5;
 
 	}
