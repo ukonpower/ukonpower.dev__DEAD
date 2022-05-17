@@ -26,6 +26,8 @@ export class CameraController extends EventEmitter {
 		Animation
 	-------------------------------*/
 
+	private animator: ORE.Animator;
+
 	private cameraAction?: ORE.AnimationAction | null = null;
 	private cameraTargetAction?: ORE.AnimationAction | null = null;
 	private lensAction?: ORE.AnimationAction | null = null;
@@ -53,6 +55,18 @@ export class CameraController extends EventEmitter {
 		// this.controls = new OrbitControls( this.camera, document.querySelector( '#canvas' ) as HTMLCanvasElement );
 		// this.controls.target = ( this.cameraTarget.position );
 
+		/*-------------------------------
+			Animator
+		-------------------------------*/
+
+		this.animator = window.gManager.animator;
+
+		this.animator.add( {
+			name: 'cameraOp',
+			initValue: 0,
+			easing: ORE.Easings.linear
+		} );
+
 	}
 
 	public updateCursor( pos: THREE.Vector2 ) {
@@ -71,6 +85,12 @@ export class CameraController extends EventEmitter {
 
 			this.controls.update();
 			return;
+
+		}
+
+		if ( this.animator.isAnimatingVariable( 'cameraOp' ) ) {
+
+			this.updateFrame( this.animator.get( 'cameraOp' ) || 0 );
 
 		}
 
@@ -147,6 +167,24 @@ export class CameraController extends EventEmitter {
 		if ( this.lensAction ) {
 
 			this.lensAction.updateFrame( frame );
+
+		}
+
+	}
+
+	public play( type: string ) {
+
+		if ( type == 'op' ) {
+
+			if ( this.cameraAction ) {
+
+				let start = this.cameraAction.frame.start;
+				let end = this.cameraAction.frame.end;
+
+				this.animator.setValue( 'cameraOp', start );
+				this.animator.animate( 'cameraOp', end, this.cameraAction.frame.duration / 30.0 );
+
+			}
 
 		}
 

@@ -124,6 +124,16 @@ export class MainScene extends ORE.BaseLayer {
 
 			}
 
+			/*-------------------------------
+				Loaded
+			-------------------------------*/
+
+			if ( this.cameraController ) {
+
+				this.cameraController.play( 'op' );
+
+			}
+
 		} );
 
 		this.connector.addListener( 'update/timeline', ( current: number ) => {
@@ -142,12 +152,14 @@ export class MainScene extends ORE.BaseLayer {
 
 		} );
 
-		if ( false ) {
+		if ( true ) {
 
-			// this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
+			// @ts-ignore
+			this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
 
 		} else {
 
+			// @ts-ignore
 			this.connector.connect( 'ws://localhost:3100' );
 
 		}
