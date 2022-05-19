@@ -10,7 +10,7 @@ export class Face extends PowerMesh {
 
 	private animator: ORE.Animator;
 
-	private faceMaterialAction: ORE.AnimationAction | null = null;
+	private actionOP: ORE.AnimationAction | null = null;
 
 	constructor( mesh: THREE.Mesh, parentUniforms: ORE.Uniforms ) {
 
@@ -24,11 +24,21 @@ export class Face extends PowerMesh {
 			noiseTex: window.gManager.assetManager.getTex( 'noise' )
 		} );
 
+		/*-------------------------------
+			Animator
+		-------------------------------*/
+
 		let animator = window.gManager.animator;
 
 		uni.noise = animator.add( {
 			name: 'faceNoise',
 			initValue: 0
+		} );
+
+		animator.add( {
+			name: 'faceOpFrame',
+			initValue: 0,
+			easing: ORE.Easings.linear
 		} );
 
 		super( mesh, {
@@ -41,11 +51,21 @@ export class Face extends PowerMesh {
 
 	}
 
+	public update( deltaTime: number ) {
+
+		if ( this.animator.isAnimatingVariable( 'faceOpFrame' ) ) {
+
+			this.updateFrame( this.animator.get( 'faceOpFrame' ) || 0 );
+
+		}
+
+	}
+
 	/*-------------------------------
 		Animation
 	-------------------------------*/
 
-	public setAction( faceMaterialAction: ORE.AnimationAction ) {
+	public setAction( actionOP: ORE.AnimationAction ) {
 
 		this.dispatchEvent( {
 			type: 'setAction'
@@ -57,11 +77,11 @@ export class Face extends PowerMesh {
 
 		};
 
-		faceMaterialAction.addListener( 'update', onUpdateFaceMaterialAction );
+		actionOP.addListener( 'update', onUpdateFaceMaterialAction );
 
 		const onSetNextAction = () => {
 
-			this.faceMaterialAction?.removeListener( 'update', onUpdateFaceMaterialAction );
+			this.actionOP?.removeListener( 'update', onUpdateFaceMaterialAction );
 
 			this.removeEventListener( 'setAction', onSetNextAction );
 
@@ -69,15 +89,15 @@ export class Face extends PowerMesh {
 
 		this.addEventListener( 'setAction', onSetNextAction );
 
-		this.faceMaterialAction = faceMaterialAction;
+		this.actionOP = actionOP;
 
 	}
 
 	public updateFrame( frame: number ) {
 
-		if ( this.faceMaterialAction ) {
+		if ( this.actionOP ) {
 
-			this.faceMaterialAction.updateFrame( frame );
+			this.actionOP.updateFrame( frame );
 
 		}
 
@@ -96,6 +116,28 @@ export class Face extends PowerMesh {
 	public noise( duration: number = 5 ) {
 
 		this.animator.animate( 'faceNoise', Math.random(), duration );
+
+	}
+
+	/*-------------------------------
+		Animation
+	-------------------------------*/
+
+	public play( type: string ) {
+
+		if ( type == 'op' ) {
+
+			if ( this.actionOP ) {
+
+				let start = this.actionOP.frame.start;
+				let end = this.actionOP.frame.end;
+
+				this.animator.setValue( 'faceOpFrame', start );
+				this.animator.animate( 'faceOpFrame', end, this.actionOP.frame.duration / 30.0 );
+
+			}
+
+		}
 
 	}
 

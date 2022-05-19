@@ -19,6 +19,7 @@ class APP {
 
 	private canvas: HTMLCanvasElement | null;
 	private controller: ORE.Controller;
+	private scene: MainScene;
 
 	constructor() {
 
@@ -30,12 +31,19 @@ class APP {
 		window.isSP = window.isSP || navigator.platform == "iPad" || ( navigator.platform == "MacIntel" && navigator.userAgent.indexOf( "Safari" ) != - 1 && navigator.userAgent.indexOf( "Chrome" ) == - 1 && ( navigator as any ).standalone !== undefined );
 
 		/*------------------------
-			init ORE
+			Scene
 		------------------------*/
+
+		this.scene = new MainScene();
+
+		/*-------------------------------
+			Controller
+		-------------------------------*/
+
 		this.canvas = document.querySelector( "#canvas" );
 
 		this.controller = new ORE.Controller();
-		this.controller.addLayer( new MainScene(), {
+		this.controller.addLayer( this.scene, {
 			name: 'Main',
 			canvas: this.canvas || undefined,
 			wrapperElement: document.querySelector( '.canvas-inner' ) as HTMLElement,

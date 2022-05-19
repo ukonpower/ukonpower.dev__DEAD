@@ -62,7 +62,7 @@ export class CameraController extends EventEmitter {
 		this.animator = window.gManager.animator;
 
 		this.animator.add( {
-			name: 'cameraOp',
+			name: 'cameraOpFrame',
 			initValue: 0,
 			easing: ORE.Easings.linear
 		} );
@@ -88,9 +88,9 @@ export class CameraController extends EventEmitter {
 
 		}
 
-		if ( this.animator.isAnimatingVariable( 'cameraOp' ) ) {
+		if ( this.animator.isAnimatingVariable( 'cameraOpFrame' ) ) {
 
-			this.updateFrame( this.animator.get( 'cameraOp' ) || 0 );
+			this.updateFrame( this.animator.get( 'cameraOpFrame' ) || 0 );
 
 		}
 
@@ -181,8 +181,8 @@ export class CameraController extends EventEmitter {
 				let start = this.cameraAction.frame.start;
 				let end = this.cameraAction.frame.end;
 
-				this.animator.setValue( 'cameraOp', start );
-				this.animator.animate( 'cameraOp', end, this.cameraAction.frame.duration / 30.0 );
+				this.animator.setValue( 'cameraOpFrame', start );
+				this.animator.animate( 'cameraOpFrame', end, this.cameraAction.frame.duration / 30.0 );
 
 			}
 

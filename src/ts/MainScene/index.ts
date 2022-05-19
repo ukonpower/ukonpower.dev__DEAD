@@ -91,6 +91,37 @@ export class MainScene extends ORE.BaseLayer {
 		if ( ! this.renderer ) return;
 
 		/*-------------------------------
+			Renderer
+		-------------------------------*/
+
+		this.renderer.shadowMap.enabled = true;
+		this.renderPipeline = new RenderPipeline( this.renderer, this.commonUniforms );
+
+		/*-------------------------------
+			CameraController
+		-------------------------------*/
+
+		this.cameraController = new CameraController( this.camera, this.scene.getObjectByName( 'Camera' ) as THREE.Object3D, this.scene.getObjectByName( 'CameraTarget' ) as THREE.Object3D );
+
+		/*-------------------------------
+			World
+		-------------------------------*/
+
+		this.world = new World( this.renderer, this.scene, this.commonUniforms );
+		this.scene.add( this.world );
+
+		if ( this.envMap ) {
+
+			this.world.updateEnvMap( this.envMap );
+
+		}
+
+		//  compile shaders
+
+		this.renderPipeline.resize( this.info.size.canvasPixelSize );
+		this.renderPipeline.render( this.scene, this.camera );
+
+		/*-------------------------------
 			Connector
 		-------------------------------*/
 
@@ -98,9 +129,7 @@ export class MainScene extends ORE.BaseLayer {
 
 		this.connector.addListener( 'update/scene', ( connector: ORE.BlenderConnector ) => {
 
-			/*-------------------------------
-				Camera
-			-------------------------------*/
+			// camera
 
 			let cameraAction = connector.getAction( 'CameraAction' );
 			let cameraTargetAction = connector.getAction( 'CameraTargetAction' );
@@ -112,9 +141,7 @@ export class MainScene extends ORE.BaseLayer {
 
 			}
 
-			/*-------------------------------
-				World
-			-------------------------------*/
+			// world
 
 			let faceMaterialAction = connector.getActionContainsAccessor( 'FaceVisibility' );
 
@@ -124,13 +151,16 @@ export class MainScene extends ORE.BaseLayer {
 
 			}
 
-			/*-------------------------------
-				Loaded
-			-------------------------------*/
+			// play opening
 
-			if ( this.cameraController ) {
+			if ( this.cameraController && this.world ) {
 
 				this.cameraController.play( 'op' );
+				this.world.face.play( 'op' );
+
+				this.dispatchEvent( {
+					type: 'loaded'
+				} );
 
 			}
 
@@ -161,37 +191,6 @@ export class MainScene extends ORE.BaseLayer {
 
 			// @ts-ignore
 			this.connector.connect( 'ws://localhost:3100' );
-
-		}
-
-		/*-------------------------------
-			Renderer
-		-------------------------------*/
-
-		if ( this.renderer ) {
-
-			this.renderer.shadowMap.enabled = true;
-
-			this.renderPipeline = new RenderPipeline( this.renderer, this.commonUniforms );
-
-		}
-
-		/*-------------------------------
-			CameraController
-		-------------------------------*/
-
-		this.cameraController = new CameraController( this.camera, this.scene.getObjectByName( 'Camera' ) as THREE.Object3D, this.scene.getObjectByName( 'CameraTarget' ) as THREE.Object3D );
-
-		/*-------------------------------
-			World
-		-------------------------------*/
-
-		this.world = new World( this.renderer, this.scene, this.commonUniforms );
-		this.scene.add( this.world );
-
-		if ( this.envMap ) {
-
-			this.world.updateEnvMap( this.envMap );
 
 		}
 

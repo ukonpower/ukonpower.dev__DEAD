@@ -203,6 +203,12 @@ export class World extends THREE.Object3D {
 	public update( deltaTime: number, time: number ) {
 
 		/*-------------------------------
+			Face
+		-------------------------------*/
+
+		this.face.update( deltaTime );
+
+		/*-------------------------------
 			Trail
 		-------------------------------*/
 
