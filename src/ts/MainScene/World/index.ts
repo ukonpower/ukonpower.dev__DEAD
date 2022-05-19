@@ -9,6 +9,7 @@ import { Trail } from './Trail';
 import { Particles } from './Particles';
 import { Face } from './Face';
 import { TuringPattern } from './TuringPattern';
+import { Ring } from './Ring';
 
 export class World extends THREE.Object3D {
 
@@ -34,6 +35,7 @@ export class World extends THREE.Object3D {
 	public triangle: Triangle;
 	public trail: Trail;
 	public particles: Particles;
+	public ring: Ring;
 
 	// powermesh
 
@@ -89,12 +91,6 @@ export class World extends THREE.Object3D {
 		light.shadow.mapSize.set( 2048, 2048 );
 
 		this.scene.add( light );
-
-		// let lightHelper = new THREE.DirectionalLightHelper( light );
-		// this.scene.add( lightHelper );
-
-		// let cameraHelper = new THREE.CameraHelper( light.shadow.camera );
-		// this.scene.add( cameraHelper );
 
 		/*-------------------------------
 			TuringPattern
@@ -163,9 +159,15 @@ export class World extends THREE.Object3D {
 		window.setInterval( () => {
 
 			this.turingPattern.noise( 5 );
-			this.face.noise( 5 );
 
 		}, 5000 );
+
+		/*-------------------------------
+			Ring
+		-------------------------------*/
+
+		this.ring = new Ring( this.customRoot.getObjectByName( "Ring" ) as THREE.Mesh, this.commonUniforms );
+		this.powerMeshAll.push( this.ring );
 
 		/*-------------------------------
 			PowerMeshes

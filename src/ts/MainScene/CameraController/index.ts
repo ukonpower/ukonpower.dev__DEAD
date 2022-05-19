@@ -172,7 +172,7 @@ export class CameraController extends EventEmitter {
 
 	}
 
-	public play( type: string ) {
+	public play( type: string, skip?: boolean ) {
 
 		if ( type == 'op' ) {
 
@@ -181,8 +181,16 @@ export class CameraController extends EventEmitter {
 				let start = this.cameraAction.frame.start;
 				let end = this.cameraAction.frame.end;
 
-				this.animator.setValue( 'cameraOpFrame', start );
-				this.animator.animate( 'cameraOpFrame', end, this.cameraAction.frame.duration / 30.0 );
+				if ( skip ) {
+
+					this.updateFrame( end );
+
+				} else {
+
+					this.animator.setValue( 'cameraOpFrame', start );
+					this.animator.animate( 'cameraOpFrame', end, this.cameraAction.frame.duration / 30.0 );
+
+				}
 
 			}
 

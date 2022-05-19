@@ -123,7 +123,7 @@ export class Face extends PowerMesh {
 		Animation
 	-------------------------------*/
 
-	public play( type: string ) {
+	public play( type: string, skip?: boolean ) {
 
 		if ( type == 'op' ) {
 
@@ -132,8 +132,16 @@ export class Face extends PowerMesh {
 				let start = this.actionOP.frame.start;
 				let end = this.actionOP.frame.end;
 
-				this.animator.setValue( 'faceOpFrame', start );
-				this.animator.animate( 'faceOpFrame', end, this.actionOP.frame.duration / 30.0 );
+				if ( skip ) {
+
+					this.updateFrame( end );
+
+				} else {
+
+					this.animator.setValue( 'faceOpFrame', start );
+					this.animator.animate( 'faceOpFrame', end, this.actionOP.frame.duration / 30.0 );
+
+				}
 
 			}
 

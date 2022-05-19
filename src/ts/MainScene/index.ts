@@ -155,8 +155,11 @@ export class MainScene extends ORE.BaseLayer {
 
 			if ( this.cameraController && this.world ) {
 
-				this.cameraController.play( 'op' );
-				this.world.face.play( 'op' );
+				// this.cameraController.play( 'op' );
+				// this.world.face.play( 'op' );
+
+				this.cameraController.play( 'op', true );
+				this.world.face.play( 'op', true );
 
 				this.dispatchEvent( {
 					type: 'loaded'
@@ -166,33 +169,31 @@ export class MainScene extends ORE.BaseLayer {
 
 		} );
 
-		this.connector.addListener( 'update/timeline', ( current: number ) => {
+		// @ts-ignore
+		this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
 
-			if ( this.cameraController ) {
+		// if ( this.connector ) {
 
-				this.cameraController.updateFrame( current );
+		// 	this.connector.addListener( 'update/timeline', ( current: number ) => {
 
-				if ( this.world ) {
+		// 		if ( this.cameraController ) {
 
-					this.world.face.updateFrame( current );
+		// 			this.cameraController.updateFrame( current );
 
-				}
+		// 			if ( this.world ) {
 
-			}
+		// 				this.world.face.updateFrame( current );
 
-		} );
+		// 			}
 
-		if ( true ) {
+		// 		}
 
-			// @ts-ignore
-			this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
+		// 	} );
 
-		} else {
+		// 	// @ts-ignore
+		// 	this.connector.connect( 'ws://localhost:3100' );
 
-			// @ts-ignore
-			this.connector.connect( 'ws://localhost:3100' );
-
-		}
+		// }
 
 	}
 
