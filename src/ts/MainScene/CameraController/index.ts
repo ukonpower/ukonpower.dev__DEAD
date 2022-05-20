@@ -4,6 +4,13 @@ import * as ORE from 'ore-three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import EventEmitter from 'wolfy87-eventemitter';
 
+
+type CameraAnimationAction = {
+	cameraAction: ORE.AnimationAction,
+	cameraTargetAction: ORE.AnimationAction,
+	lensAction: ORE.AnimationAction
+}
+
 export class CameraController extends EventEmitter {
 
 	private camera: THREE.PerspectiveCamera;
@@ -27,10 +34,7 @@ export class CameraController extends EventEmitter {
 	-------------------------------*/
 
 	private animator: ORE.Animator;
-
-	private cameraAction?: ORE.AnimationAction | null = null;
-	private cameraTargetAction?: ORE.AnimationAction | null = null;
-	private lensAction?: ORE.AnimationAction | null = null;
+	private animationActions?: CameraAnimationAction;
 
 	constructor( camera: THREE.PerspectiveCamera, cameraContainer: THREE.Object3D, cameraTarget: THREE.Object3D ) {
 
@@ -107,9 +111,12 @@ export class CameraController extends EventEmitter {
 		BC Animation
 	-------------------------------*/
 
-	public setAction( cameraAction: ORE.AnimationAction, cameraTargetAction: ORE.AnimationAction, lensAction: ORE.AnimationAction ) {
+
+	public setAction( animationActions: CameraAnimationAction ) {
 
 		this.emitEvent( 'updateAction' );
+
+		this.animationActions = animationActions;
 
 		const onUpdateCameraAction = ( action: ORE.AnimationAction ) => {
 
@@ -132,69 +139,44 @@ export class CameraController extends EventEmitter {
 
 		};
 
-		cameraAction.addListener( 'update', onUpdateCameraAction );
-		cameraTargetAction.addListener( 'update', onUpdateCameraTargetAction );
-		lensAction.addListener( 'update', onUpdateLensAction );
+		animationActions.cameraAction.addListener( 'update', onUpdateCameraAction );
+		animationActions.cameraTargetAction.addListener( 'update', onUpdateCameraTargetAction );
+		animationActions.lensAction.addListener( 'update', onUpdateLensAction );
 
 		this.addOnceListener( 'updateAction', () => {
 
-			cameraAction.removeListener( 'update', onUpdateCameraAction );
-			cameraTargetAction.removeListener( 'update', onUpdateCameraTargetAction );
-			lensAction.removeListener( 'update', onUpdateCameraAction );
+			animationActions.cameraAction.removeListener( 'update', onUpdateCameraAction );
+			animationActions.cameraTargetAction.removeListener( 'update', onUpdateCameraTargetAction );
+			animationActions.lensAction.removeListener( 'update', onUpdateCameraAction );
 
 		} );
 
-		this.cameraAction = cameraAction;
-		this.cameraTargetAction = cameraTargetAction;
-		this.lensAction = lensAction;
 
 	}
 
 	public updateFrame( frame: number ) {
 
-		if ( this.cameraAction ) {
+		if ( this.animationActions ) {
 
-			this.cameraAction.updateFrame( frame );
-
-		}
-
-		if ( this.cameraTargetAction ) {
-
-			this.cameraTargetAction.updateFrame( frame );
-
-		}
-
-		if ( this.lensAction ) {
-
-			this.lensAction.updateFrame( frame );
+			this.animationActions.cameraAction.updateFrame( frame );
+			this.animationActions.cameraTargetAction.updateFrame( frame );
+			this.animationActions.lensAction.updateFrame( frame );
 
 		}
 
 	}
 
-	public play( type: string, skip?: boolean ) {
+	public play( animationActions: CameraAnimationAction ) {
 
-		if ( type == 'op' ) {
+		this.setAction( animationActions );
 
-			if ( this.cameraAction ) {
+		let frame = animationActions.cameraAction.frame;
 
-				let start = this.cameraAction.frame.start;
-				let end = this.cameraAction.frame.end;
+		let start = frame.start;
+		let end = frame.end;
 
-				if ( skip ) {
-
-					this.updateFrame( end );
-
-				} else {
-
-					this.animator.setValue( 'cameraOpFrame', start );
-					this.animator.animate( 'cameraOpFrame', end, this.cameraAction.frame.duration / 30.0 );
-
-				}
-
-			}
-
-		}
+		this.animator.setValue( 'cameraOpFrame', start );
+		this.animator.animate( 'cameraOpFrame', end, frame.duration / 30.0 );
 
 	}
 

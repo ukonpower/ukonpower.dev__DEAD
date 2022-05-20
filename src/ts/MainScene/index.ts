@@ -129,37 +129,39 @@ export class MainScene extends ORE.BaseLayer {
 
 		this.connector.addListener( 'update/scene', ( connector: ORE.BlenderConnector ) => {
 
+			console.log( this.connector?.actions );
 			// camera
 
-			let cameraAction = connector.getAction( 'CameraAction' );
-			let cameraTargetAction = connector.getAction( 'CameraTargetAction' );
+			// let cameraAction = connector.getAction( 'OP_CameraAction' );
+			// let cameraTargetAction = connector.getAction( 'OP_CameraTargetAction' );
+			// let lensAction = connector.getAction( 'CameraAction.001' );
+
+			let cameraAction = connector.getAction( 'Content_CameraAction' );
+			let cameraTargetAction = connector.getAction( 'Content_CameraTargetAction' );
 			let lensAction = connector.getAction( 'CameraAction.001' );
+
 
 			if ( cameraAction && cameraTargetAction && lensAction && this.cameraController ) {
 
-				this.cameraController.setAction( cameraAction, cameraTargetAction, lensAction );
+				this.cameraController.setAction( { cameraAction, cameraTargetAction, lensAction } );
+				// this.cameraController.play( { cameraAction, cameraTargetAction, lensAction } );
 
 			}
 
 			// world
 
-			let faceMaterialAction = connector.getActionContainsAccessor( 'FaceVisibility' );
+			let faceOPMaterialAction = connector.getActionContainsAccessor( 'FaceVisibility' );
 
-			if ( this.world && faceMaterialAction ) {
+			if ( this.world && faceOPMaterialAction ) {
 
-				this.world.face.setAction( faceMaterialAction );
+				this.world.face.setAction( faceOPMaterialAction );
+				// this.world.face.play( "op" );
 
 			}
 
 			// play opening
 
 			if ( this.cameraController && this.world ) {
-
-				// this.cameraController.play( 'op' );
-				// this.world.face.play( 'op' );
-
-				this.cameraController.play( 'op', true );
-				this.world.face.play( 'op', true );
 
 				this.dispatchEvent( {
 					type: 'loaded'
@@ -170,30 +172,26 @@ export class MainScene extends ORE.BaseLayer {
 		} );
 
 		// @ts-ignore
-		this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
+		// this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
 
-		// if ( this.connector ) {
+		this.connector.addListener( 'update/timeline', ( current: number ) => {
 
-		// 	this.connector.addListener( 'update/timeline', ( current: number ) => {
+			if ( this.cameraController ) {
 
-		// 		if ( this.cameraController ) {
+				this.cameraController.updateFrame( current );
 
-		// 			this.cameraController.updateFrame( current );
+				if ( this.world ) {
 
-		// 			if ( this.world ) {
+					this.world.face.updateFrame( current );
 
-		// 				this.world.face.updateFrame( current );
+				}
 
-		// 			}
+			}
 
-		// 		}
+		} );
 
-		// 	} );
-
-		// 	// @ts-ignore
-		// 	this.connector.connect( 'ws://localhost:3100' );
-
-		// }
+		// @ts-ignore
+		this.connector.connect( 'ws://localhost:3100' );
 
 	}
 
