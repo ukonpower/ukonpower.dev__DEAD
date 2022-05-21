@@ -1,16 +1,16 @@
-uniform sampler2D tex1;
-uniform sampler2D tex2;
+uniform sampler2D tex;
 
 uniform float blend;
 
 varying vec2 vUv;
+varying float vPosX;
 
 void main( void ) {
 
-	vec4 col1 = texture2D( tex1, vUv );
-	vec4 col2 = texture2D( tex2, vUv );
+	vec4 col = texture2D( tex, vUv );
 
-	vec4 col = mix( col1, col2, blend );
+	col.w *= smoothstep( 1.5, 1.0, abs( vPosX ) );
+	// col.w *= smoothstep( 1.5, 1.49, abs( vPosX ) );
 
 	gl_FragColor = col;
 

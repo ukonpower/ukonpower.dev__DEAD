@@ -73,13 +73,18 @@ export class Content extends THREE.Object3D {
 			visible: false
 		} );
 
+		let elmSize = 450;
+		this.contentElm.style.width = elmSize + 'px';
+		this.contentElm.style.height = elmSize / ( this.contentMeshSize.x / this.contentMeshSize.y ) + 'px';
+
 		/*-------------------------------
 			Thumbnail
 		-------------------------------*/
 
 		this.thumbnail = new Thumbnail( this.commonUniforms );
-		this.thumbnail.scale.setScalar( this.contentMeshSize.x );
-		this.thumbnail.position.y = 0.7;
+		this.thumbnail.scale.setScalar( this.contentMeshSize.x * 0.8 );
+		this.thumbnail.position.y = 0.6;
+		// this.thumbnail.position.x = - 2.0;
 		this.contentMesh.add( this.thumbnail );
 
 		this.openContent( 'Recollection' );

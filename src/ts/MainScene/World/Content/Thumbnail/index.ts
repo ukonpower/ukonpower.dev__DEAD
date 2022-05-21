@@ -4,7 +4,7 @@ import * as ORE from 'ore-three';
 import thumbnailVert from './shaders/thumbnail.vs';
 import thumbnailFrag from './shaders/thumbnail.fs';
 
-export class Thumbnail extends THREE.Mesh {
+export class Thumbnail extends THREE.Object3D {
 
 	private commonUniforms: ORE.Uniforms;
 
@@ -14,15 +14,15 @@ export class Thumbnail extends THREE.Mesh {
 	public textures: THREE.Texture[] = [];
 	public index: number = 0;
 
+	private meshList: THREE.Mesh[] = [];
+
+	private commonGeo: THREE.BufferGeometry;
+
 	constructor( parentUniforms: ORE.Uniforms ) {
 
+		super();
+
 		let uni = ORE.UniformsLib.mergeUniforms( parentUniforms, {
-			tex1: {
-				value: null
-			},
-			tex2: {
-				value: null
-			}
 		} );
 
 		/*-------------------------------
@@ -41,15 +41,7 @@ export class Thumbnail extends THREE.Mesh {
 		-------------------------------*/
 
 		let aspect = 3000 / 1800;
-		let geo = new THREE.PlaneBufferGeometry( 1.0, 1.0 / aspect );
-		let mat = new THREE.ShaderMaterial( {
-			vertexShader: thumbnailVert,
-			fragmentShader: thumbnailFrag,
-			uniforms: uni,
-			transparent: true,
-		} );
-
-		super( geo, mat );
+		this.commonGeo = new THREE.PlaneBufferGeometry( 1.0, 1.0 / aspect );
 
 		this.animator = animator;
 		this.commonUniforms = uni;
@@ -91,18 +83,46 @@ export class Thumbnail extends THREE.Mesh {
 
 		} );
 
+		this.textures.forEach( ( item, index ) => {
+
+			let uni = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {
+				tex: {
+					value: item
+				},
+				total: {
+					value: this.textures.length
+				},
+				offset: {
+					value: index
+				}
+			} );
+
+			let mat = new THREE.ShaderMaterial( {
+				vertexShader: thumbnailVert,
+				fragmentShader: thumbnailFrag,
+				uniforms: uni,
+				transparent: true,
+			} );
+
+			let thumbMesh = new THREE.Mesh( this.commonGeo, mat );
+			// thumbMesh.position.x = ( index - this.textures.length / 2 ) * 1.1;
+			this.add( thumbMesh );
+
+			this.meshList.push( thumbMesh );
+
+		} );
+
 	}
 
 	public show( index: number ) {
 
-		this.index = index;
+		// this.index = index;
 
-		this.commonUniforms.tex1.value = this.commonUniforms.tex2.value;
-		this.commonUniforms.tex2.value = this.textures[ index ];
+		// this.commonUniforms.tex1.value = this.commonUniforms.tex2.value;
+		// this.commonUniforms.tex2.value = this.textures[ index ];
 
-		this.animator.setValue( 'thumbnailBlend', 0 );
-		this.animator.animate( 'thumbnailBlend', 1, 2 );
-
+		// this.animator.setValue( 'thumbnailBlend', 0 );
+		// this.animator.animate( 'thumbnailBlend', 1, 2 );
 
 	}
 

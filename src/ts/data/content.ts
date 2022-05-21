@@ -16,7 +16,8 @@ export const ContentDataList: ContentData[] = [
 			'./assets/scene/img/content/recollection/recollection_3.png',
 		],
 		description: `
-			record the sensations and emotions I felt at that time.
+			This is a graphical representation of the events I felt.
+			High-cost rendering techniques such as ray marching are used.
 		`
 	}
 ];
