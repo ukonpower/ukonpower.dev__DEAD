@@ -32,6 +32,12 @@ export class EasyRaycaster extends THREE.EventDispatcher {
 	private dispatchMouseEvent( type: 'enter' | 'out' | 'hover' | 'click', name: string, intersection?: THREE.Intersection ) {
 
 		this.dispatchEvent( {
+			type: type,
+			name: name,
+			intersection: intersection
+		} );
+
+		this.dispatchEvent( {
 			type: type + '/' + name,
 			intersection: intersection
 		} );
@@ -42,7 +48,7 @@ export class EasyRaycaster extends THREE.EventDispatcher {
 
 		this.raycaster.setFromCamera( cursor, camera );
 
-		let intersection = this.raycaster.intersectObjects( objects );
+		const intersection = this.raycaster.intersectObjects( objects );
 
 		for ( let i = 0; i < intersection.length; i ++ ) {
 
@@ -56,7 +62,7 @@ export class EasyRaycaster extends THREE.EventDispatcher {
 
 	public update( cursor: THREE.Vector2, camera: THREE.Camera ) {
 
-		let intersection = this.getIntersection( cursor, camera, this.touchableObjects );
+		const intersection = this.getIntersection( cursor, camera, this.touchableObjects );
 
 		if ( intersection ) {
 
@@ -107,7 +113,7 @@ export class EasyRaycaster extends THREE.EventDispatcher {
 
 	public touchStart( cursor: THREE.Vector2, camera: THREE.Camera ) {
 
-		let intersection = this.getIntersection( cursor, camera, this.touchableObjects );
+		const intersection = this.getIntersection( cursor, camera, this.touchableObjects );
 
 		if ( intersection ) {
 
@@ -120,11 +126,11 @@ export class EasyRaycaster extends THREE.EventDispatcher {
 
 	public touchEnd( cursor: THREE.Vector2, camera: THREE.Camera ) {
 
-		let intersection = this.getIntersection( cursor, camera, this.touchableObjects );
+		const intersection = this.getIntersection( cursor, camera, this.touchableObjects );
 
 		if ( intersection && this.touchStartObj ) {
 
-			let diff = new Date().getTime() - this.clickStart;
+			const diff = new Date().getTime() - this.clickStart;
 
 			if ( 'isObject3D' in this.touchStartObj ) {
 
@@ -135,6 +141,43 @@ export class EasyRaycaster extends THREE.EventDispatcher {
 				}
 
 			}
+
+		}
+
+	}
+
+	public displayOut() {
+
+		if ( this.hoverMemObj ) {
+
+			if ( 'isObject3D' in this.hoverMemObj ) {
+
+				this.dispatchMouseEvent( 'out', this.hoverMemObj.name );
+				this.hoverMemObj = null;
+
+			}
+
+		}
+
+	}
+
+	public addTouchableObject( mesh: THREE.Object3D ) {
+
+		this.touchableObjects.push( mesh );
+
+	}
+
+	public removeTouchableObject( mesh: THREE.Mesh ) {
+
+		const index = this.touchableObjects.findIndex( ( item ) => {
+
+			return item.uuid == mesh.uuid;
+
+		} );
+
+		if ( index > - 1 ) {
+
+			this.touchableObjects.splice( index, 1 );
 
 		}
 

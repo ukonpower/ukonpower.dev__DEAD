@@ -1,7 +1,6 @@
 
 uniform float time;
-uniform float offset;
-uniform float total;
+uniform vec3 offsetPos;
 
 varying vec2 vUv;
 varying float vPosX;
@@ -11,15 +10,7 @@ varying float vPosX;
 void main( void ) {
 
 	vec3 pos = position;
-
-
-	float offsetX = (offset / total) + time * 0.05 / total;
-
-	offsetX = mod( offsetX, 1.0 ) - 0.5; 
-
-	pos.x -= offsetX * 4.3;
-
-	vPosX = pos.x;
+	vPosX = pos.x + offsetPos.x;
 
 	vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
 	gl_Position = projectionMatrix * mvPosition;

@@ -128,17 +128,7 @@ export class Content extends THREE.Object3D {
 
 		( aElm.querySelector( 'span' ) as HTMLSpanElement ).innerText = data.linkLabel;
 
-		await this.thumbnail.setImgs( data.images );
-
-		this.thumbnail.show( 0 );
-
-		this.thumbnailChangeTimer = window.setInterval( () => {
-
-			let num = this.thumbnail.textures.length;
-			let index = ( this.thumbnail.index + 1 ) % num;
-			this.thumbnail.show( index );
-
-		}, 5000 );
+		this.thumbnail.setImgs( data.images );
 
 	}
 
@@ -174,9 +164,10 @@ export class Content extends THREE.Object3D {
 		let fov = Math.round( camera.projectionMatrix.elements[ 5 ] * this.domSizeHalf.y );
 
 		this.domCanvasElm.style.perspective = fov + 'px';
-
 		this.domCanvasCameraElm.style.transform = 'translateZ(' + fov + 'px)' + this.getCameraCSSMatrix( camera.matrixWorldInverse ) + 'translate(' + this.domSizeHalf.x + 'px,' + this.domSizeHalf.y + 'px)';
 		this.contentElm.style.transform = this.getObjectCSSMatrix( this.contentMesh.matrixWorld.multiply( new THREE.Matrix4().makeScale( 1.0 / this.contentElm.clientWidth * this.contentMeshSize.x, 1.0 / this.contentElm.clientHeight * this.contentMeshSize.y, 1.0 ) ) );
+
+		this.thumbnail.update( deltaTime );
 
 	}
 

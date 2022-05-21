@@ -32,6 +32,30 @@ export class MainScene extends ORE.BaseLayer {
 		this.gManager = new GlobalManager();
 
 		/*-------------------------------
+			Raycaster
+		-------------------------------*/
+
+		this.gManager.eRay.addEventListener( 'enter', e => {
+
+			if ( this.renderer ) {
+
+				document.body.style.cursor = 'pointer';
+
+			}
+
+		} );
+
+		this.gManager.eRay.addEventListener( 'out', e => {
+
+			if ( this.renderer ) {
+
+				document.body.style.cursor = 'auto';
+
+			}
+
+		} );
+
+		/*-------------------------------
 			load Scene
 		-------------------------------*/
 
@@ -130,8 +154,8 @@ export class MainScene extends ORE.BaseLayer {
 		this.connector.addListener( 'update/scene', ( connector: ORE.BlenderConnector ) => {
 
 			console.log( this.connector?.actions );
-			// camera
 
+			// camera
 			// let cameraAction = connector.getAction( 'OP_CameraAction' );
 			// let cameraTargetAction = connector.getAction( 'OP_CameraTargetAction' );
 			// let lensAction = connector.getAction( 'CameraAction.001' );
@@ -260,9 +284,21 @@ export class MainScene extends ORE.BaseLayer {
 
 		}
 
+		if ( this.gManager && ( args.delta.x != 0 || args.delta.y != 0 ) ) {
+
+			this.gManager.eRay.update( args.normalizedPosition, this.camera );
+
+		}
+
 	}
 
 	public onTouchStart( args: ORE.TouchEventArgs ) {
+
+		if ( this.gManager ) {
+
+			this.gManager.eRay.touchStart( args.normalizedPosition, this.camera );
+
+		}
 
 	}
 
@@ -271,6 +307,12 @@ export class MainScene extends ORE.BaseLayer {
 	}
 
 	public onTouchEnd( args: ORE.TouchEventArgs ) {
+
+		if ( this.gManager ) {
+
+			this.gManager.eRay.touchEnd( args.normalizedPosition, this.camera );
+
+		}
 
 	}
 

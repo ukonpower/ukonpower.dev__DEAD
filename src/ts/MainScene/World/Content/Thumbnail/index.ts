@@ -7,6 +7,8 @@ import { ContentImgData } from '~/ts/data/content';
 
 export class Thumbnail extends THREE.Object3D {
 
+	private time: number = 0;
+
 	private commonUniforms: ORE.Uniforms;
 
 	private animator: ORE.Animator;
@@ -15,37 +17,87 @@ export class Thumbnail extends THREE.Object3D {
 	public textures: {tex: THREE.Texture, data: ContentImgData}[] = [];
 	public index: number = 0;
 
-	private meshList: THREE.Mesh[] = [];
-
-	private commonGeo: THREE.BufferGeometry;
+	private meshNum: number = 5;
+	private meshList: THREE.Mesh<THREE.PlaneBufferGeometry, THREE.ShaderMaterial>[] = [];
 
 	constructor( parentUniforms: ORE.Uniforms ) {
 
 		super();
 
-		let uni = ORE.UniformsLib.mergeUniforms( parentUniforms, {
+		this.commonUniforms = ORE.UniformsLib.mergeUniforms( parentUniforms, {
 		} );
 
 		/*-------------------------------
 			Animator
 		-------------------------------*/
 
-		let animator = window.gManager.animator;
+		this.animator = window.gManager.animator;
 
-		uni.blend = animator.add( {
-			name: 'thumbnailBlend',
+		this.commonUniforms.visibility = this.animator.add( {
+			name: 'thumbVisibility',
+			initValue: 0
+		} );
+
+		this.commonUniforms.blend = this.animator.add( {
+			name: 'thumbBlend',
 			initValue: 0
 		} );
 
 		/*-------------------------------
-			Geo / Mat
+			Mesh
 		-------------------------------*/
 
 		let aspect = 3000 / 1800;
-		this.commonGeo = new THREE.PlaneBufferGeometry( 1, 1.0 / aspect, 10, 1.0 );
+		let geo = new THREE.PlaneBufferGeometry( 1, 1.0 / aspect, 1.0, 1.0 );
 
-		this.animator = animator;
-		this.commonUniforms = uni;
+		for ( let i = 0; i < this.meshNum; i ++ ) {
+
+			let mat = new THREE.ShaderMaterial( {
+				vertexShader: thumbnailVert,
+				fragmentShader: thumbnailFrag,
+				uniforms: ORE.UniformsLib.mergeUniforms( this.commonUniforms, {
+					tex1: {
+						value: null
+					},
+					tex2: {
+						value: null
+					},
+				} ),
+				transparent: true,
+			} );
+
+			let mesh = new THREE.Mesh( geo, mat );
+			mesh.name = mesh.uuid;
+			this.add( mesh );
+
+			window.gManager.eRay.addTouchableObject( mesh );
+			window.gManager.eRay.addEventListener( 'click/' + mesh.name, () => {
+
+				let link = mesh.userData.texLink;
+
+				console.log( link );
+
+				if ( link ) {
+
+					window.open( link, '_blank' );
+
+				}
+
+			} );
+
+
+			mat.uniforms.offsetPos = {
+				value: mesh.position
+			};
+
+			this.meshList.push( mesh );
+
+		}
+
+		/*-------------------------------
+			Loader
+		-------------------------------*/
+
 		this.loader = new THREE.TextureLoader();
 
 	}
@@ -84,46 +136,56 @@ export class Thumbnail extends THREE.Object3D {
 
 		} );
 
-		this.textures.forEach( ( item, index ) => {
+		this.curerntImgIndex = - 1;
 
-			let uni = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {
-				tex: {
-					value: item.tex
-				},
-				total: {
-					value: this.textures.length
-				},
-				offset: {
-					value: index
-				}
-			} );
+		this.meshList.forEach( ( item, index ) => {
 
-			let mat = new THREE.ShaderMaterial( {
-				vertexShader: thumbnailVert,
-				fragmentShader: thumbnailFrag,
-				uniforms: uni,
-				transparent: true,
-			} );
-
-			let thumbMesh = new THREE.Mesh( this.commonGeo, mat );
-			// thumbMesh.position.x = ( index - this.textures.length / 2 ) * 1.1;
-			this.add( thumbMesh );
-
-			this.meshList.push( thumbMesh );
+			this.updateImg( index );
 
 		} );
 
 	}
 
-	public show( index: number ) {
+	private curerntImgIndex: number = - 1;
 
-		// this.index = index;
+	private updateImg( meshIndex: number ) {
 
-		// this.commonUniforms.tex1.value = this.commonUniforms.tex2.value;
-		// this.commonUniforms.tex2.value = this.textures[ index ];
+		if ( this.textures.length == 0 ) return;
 
-		// this.animator.setValue( 'thumbnailBlend', 0 );
-		// this.animator.animate( 'thumbnailBlend', 1, 2 );
+		this.curerntImgIndex = ( this.curerntImgIndex + 1 ) % this.textures.length;
+
+		let texData = this.textures[ this.curerntImgIndex ];
+
+		let mesh = this.meshList[ meshIndex ];
+		let uni = mesh.material.uniforms;
+		uni.tex1.value = uni.tex2.value;
+		uni.tex2.value = texData.tex;
+
+		mesh.userData.texLink = texData.data.link;
+
+	}
+
+	public update( deltaTime: number ) {
+
+		this.time += deltaTime;
+
+		let t = this.time / this.meshList.length * 0.1;
+
+		for ( let i = 0; i < this.meshList.length; i ++ ) {
+
+			let mesh = this.meshList[ i ];
+
+			let p = mesh.position.x;
+
+			mesh.position.x = - ( ( ( t + i / this.meshList.length ) % 1 ) - 0.5 ) * ( this.meshList.length * 1.05 );
+
+			if ( mesh.position.x > p ) {
+
+				this.updateImg( i );
+
+			}
+
+		}
 
 	}
 

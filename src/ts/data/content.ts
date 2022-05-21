@@ -23,11 +23,11 @@ export const ContentDataList: ContentData[] = [
 			},
 			{
 				url: './assets/scene/img/content/recollection/recollection_1.png',
-				link: 'https://recollection.ukon.dev/'
+				link: 'https://recollection.ukon.dev/focused'
 			},
 			{
 				url: './assets/scene/img/content/recollection/recollection_2.png',
-				link: 'https://recollection.ukon.dev/'
+				link: 'https://recollection.ukon.dev/elapsed'
 			},
 			{
 				url: './assets/scene/img/content/recollection/recollection_3.png',
