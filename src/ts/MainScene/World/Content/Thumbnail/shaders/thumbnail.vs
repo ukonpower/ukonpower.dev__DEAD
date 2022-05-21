@@ -13,17 +13,11 @@ void main( void ) {
 	vec3 pos = position;
 
 
-	float offsetX = (offset / total) + time * 0.1 / total;
+	float offsetX = (offset / total) + time * 0.05 / total;
 
 	offsetX = mod( offsetX, 1.0 ) - 0.5; 
 
-	// pos.x -= offsetX * 4.3;
-
-	pos.z -= 5.0;
-
-	pos.xz *= rotate( offsetX * 0.85  );
-	
-	pos.z += 5.0;
+	pos.x -= offsetX * 4.3;
 
 	vPosX = pos.x;
 

@@ -3,6 +3,7 @@ import * as ORE from 'ore-three';
 
 import thumbnailVert from './shaders/thumbnail.vs';
 import thumbnailFrag from './shaders/thumbnail.fs';
+import { ContentImgData } from '~/ts/data/content';
 
 export class Thumbnail extends THREE.Object3D {
 
@@ -11,7 +12,7 @@ export class Thumbnail extends THREE.Object3D {
 	private animator: ORE.Animator;
 	private loader: THREE.TextureLoader;
 
-	public textures: THREE.Texture[] = [];
+	public textures: {tex: THREE.Texture, data: ContentImgData}[] = [];
 	public index: number = 0;
 
 	private meshList: THREE.Mesh[] = [];
@@ -41,7 +42,7 @@ export class Thumbnail extends THREE.Object3D {
 		-------------------------------*/
 
 		let aspect = 3000 / 1800;
-		this.commonGeo = new THREE.PlaneBufferGeometry( 1.0, 1.0 / aspect );
+		this.commonGeo = new THREE.PlaneBufferGeometry( 1, 1.0 / aspect, 10, 1.0 );
 
 		this.animator = animator;
 		this.commonUniforms = uni;
@@ -49,15 +50,15 @@ export class Thumbnail extends THREE.Object3D {
 
 	}
 
-	public async setImgs( imgList: string[] ) {
+	public async setImgs( imgList: ContentImgData[] ) {
 
 		let prms = imgList.map( item => {
 
-			return new Promise<THREE.Texture | null>( ( resolve ) => {
+			return new Promise<{tex:THREE.Texture, data: ContentImgData} | null>( ( resolve ) => {
 
-				this.loader.load( item, ( tex ) => {
+				this.loader.load( item.url, ( tex ) => {
 
-					resolve( tex );
+					resolve( { tex, data: item } );
 
 				}, undefined, () => {
 
@@ -87,7 +88,7 @@ export class Thumbnail extends THREE.Object3D {
 
 			let uni = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {
 				tex: {
-					value: item
+					value: item.tex
 				},
 				total: {
 					value: this.textures.length

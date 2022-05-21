@@ -82,9 +82,8 @@ export class Content extends THREE.Object3D {
 		-------------------------------*/
 
 		this.thumbnail = new Thumbnail( this.commonUniforms );
-		this.thumbnail.scale.setScalar( this.contentMeshSize.x * 0.8 );
+		this.thumbnail.scale.setScalar( this.contentMeshSize.x * 0.7 );
 		this.thumbnail.position.y = 0.6;
-		// this.thumbnail.position.x = - 2.0;
 		this.contentMesh.add( this.thumbnail );
 
 		this.openContent( 'Recollection' );
@@ -118,11 +117,16 @@ export class Content extends THREE.Object3D {
 	private async setContentData( data: ContentData ) {
 
 		let titleElm = this.contentElm.querySelector( '.content-title' ) as HTMLElement;
-		let descElm = this.contentElm.querySelector( '.content-desc' ) as HTMLElement;
-		// let imgElm = this.contentElm.querySelector( '.content-img' ) as HTMLElement;
-
 		titleElm.innerHTML = data.title;
+
+		let descElm = this.contentElm.querySelector( '.content-desc' ) as HTMLElement;
 		descElm.innerHTML = data.description;
+
+		let linkWrapperElm = this.contentElm.querySelector( '.content-link' ) as HTMLElement;
+		let aElm = linkWrapperElm.querySelector( 'a' ) as HTMLAnchorElement;
+		aElm.href = data.link;
+
+		( aElm.querySelector( 'span' ) as HTMLSpanElement ).innerText = data.linkLabel;
 
 		await this.thumbnail.setImgs( data.images );
 

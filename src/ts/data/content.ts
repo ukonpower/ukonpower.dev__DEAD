@@ -1,19 +1,38 @@
+export type ContentImgData = {
+	url: string,
+	link?: string
+}
+
 export type ContentData = {
 	title: string,
-	link: string | null,
+	link: string,
+	linkLabel: string,
 	description: string,
-	images: string[],
+	images: ContentImgData[],
 }
 
 export const ContentDataList: ContentData[] = [
 	{
 		title: 'Recollection',
 		link: 'https://recollection.ukon.dev/',
+		linkLabel: 'recollection.ukon.dev',
 		images: [
-			'./assets/scene/img/content/recollection/recollection_0.png',
-			'./assets/scene/img/content/recollection/recollection_1.png',
-			'./assets/scene/img/content/recollection/recollection_2.png',
-			'./assets/scene/img/content/recollection/recollection_3.png',
+			{
+				url: './assets/scene/img/content/recollection/recollection_0.png',
+				link: 'https://recollection.ukon.dev/'
+			},
+			{
+				url: './assets/scene/img/content/recollection/recollection_1.png',
+				link: 'https://recollection.ukon.dev/'
+			},
+			{
+				url: './assets/scene/img/content/recollection/recollection_2.png',
+				link: 'https://recollection.ukon.dev/'
+			},
+			{
+				url: './assets/scene/img/content/recollection/recollection_3.png',
+				link: 'https://recollection.ukon.dev/'
+			}
 		],
 		description: `
 			This is a graphical representation of the events I felt.
