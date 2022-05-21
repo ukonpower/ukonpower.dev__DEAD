@@ -12,7 +12,21 @@ module.exports = {
     output: {
     },
     module: {
-        rules: [{
+        rules: [
+			{
+				test: /node_modules\/(.+)\.css$/,
+				use: [
+				  {
+					loader: 'style-loader',
+				  },
+				  {
+					loader: 'css-loader',
+					options: { url: false },
+				  },
+				],
+				sideEffects: true
+			},
+			{
                 test: /\.ts$/,
                 exclude: /node_modules/,
                 use: 'ts-loader'
