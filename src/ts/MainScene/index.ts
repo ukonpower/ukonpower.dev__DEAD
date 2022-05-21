@@ -206,6 +206,8 @@ export class MainScene extends ORE.BaseLayer {
 		if ( this.cameraController ) {
 
 			this.cameraController.update( deltaTime );
+			this.camera.updateMatrixWorld();
+			this.camera.matrixWorldNeedsUpdate = false;
 
 		}
 
