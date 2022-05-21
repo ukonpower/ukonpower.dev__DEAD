@@ -211,7 +211,7 @@ export class MainScene extends ORE.BaseLayer {
 
 		if ( this.world ) {
 
-			this.world.update( deltaTime, this.time );
+			this.world.update( deltaTime, this.time, this.camera );
 
 		}
 
@@ -227,9 +227,18 @@ export class MainScene extends ORE.BaseLayer {
 
 		super.onResize();
 
+		let canvasInner = document.querySelector( '.canvas-inner' ) as HTMLElement;
+		canvasInner.style.top = Math.floor( window.innerHeight / 2 ) + "px";
+
 		if ( this.cameraController ) {
 
 			this.cameraController.resize( this.info );
+
+		}
+
+		if ( this.world ) {
+
+			this.world.resize( this.info );
 
 		}
 

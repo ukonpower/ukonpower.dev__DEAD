@@ -10,6 +10,7 @@ import { Particles } from './Particles';
 import { Face } from './Face';
 import { TuringPattern } from './TuringPattern';
 import { Ring } from './Ring';
+import { Content } from './Content';
 
 export class World extends THREE.Object3D {
 
@@ -40,6 +41,10 @@ export class World extends THREE.Object3D {
 	// powermesh
 
 	private powerMeshAll: PowerMesh[] = [];
+
+	// content
+
+	private content: Content;
 
 	constructor( renderer: THREE.WebGLRenderer, scene: THREE.Scene, parentUniforms: ORE.Uniforms ) {
 
@@ -200,9 +205,16 @@ export class World extends THREE.Object3D {
 
 		applyPowerMesh( this.commonRoot.children.slice() );
 
+		/*-------------------------------
+			Content
+		-------------------------------*/
+
+		this.content = new Content( this.customRoot.getObjectByName( 'Content' )as THREE.Mesh, this.commonUniforms );
+		this.add( this.content );
+
 	}
 
-	public update( deltaTime: number, time: number ) {
+	public update( deltaTime: number, time: number, camera: THREE.PerspectiveCamera ) {
 
 		/*-------------------------------
 			Face
@@ -223,7 +235,18 @@ export class World extends THREE.Object3D {
 		this.turingPattern.update( deltaTime );
 
 		this.face.turing = this.turingPattern.turingPatternRenderer.texture;
-		this.face.rotation.y = Math.sin( time * 0.3 ) * 0.5;
+
+		/*-------------------------------
+			Content
+		-------------------------------*/
+
+		this.content.update( deltaTime, camera );
+
+	}
+
+	public resize( layerInfo: ORE.LayerInfo ) {
+
+		this.content.resize( layerInfo );
 
 	}
 

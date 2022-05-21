@@ -52,7 +52,7 @@ export class CameraController extends EventEmitter {
 
 		this.cursorPos = new THREE.Vector2();
 		this.cursorPosDelay = new THREE.Vector2();
-		this.cameraMoveWeight = new THREE.Vector2( 0.1, 0.1 );
+		this.cameraMoveWeight = new THREE.Vector2( 0.5, 0.5 );
 
 		this.camera.position.copy( this.cameraTransform.position );
 
