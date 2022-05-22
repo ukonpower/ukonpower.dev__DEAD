@@ -20,6 +20,8 @@ export class Thumbnail extends THREE.Object3D {
 	private meshNum: number = 5;
 	private meshList: THREE.Mesh<THREE.PlaneBufferGeometry, THREE.ShaderMaterial>[] = [];
 
+	public viewing: boolean = false;
+
 	constructor( parentUniforms: ORE.Uniforms ) {
 
 		super();
@@ -70,12 +72,9 @@ export class Thumbnail extends THREE.Object3D {
 			mesh.name = mesh.uuid;
 			this.add( mesh );
 
-			window.gManager.eRay.addTouchableObject( mesh );
 			window.gManager.eRay.addEventListener( 'click/' + mesh.name, () => {
 
 				let link = mesh.userData.texLink;
-
-				console.log( link );
 
 				if ( link ) {
 
@@ -102,19 +101,37 @@ export class Thumbnail extends THREE.Object3D {
 
 	}
 
-	public async setImgs( imgList: ContentImgData[] ) {
+	/*-------------------------------
+		Open / Close
+	-------------------------------*/
+
+	public async open( imgList: ContentImgData[] ) {
 
 		let prms = imgList.map( item => {
 
-			return new Promise<{tex:THREE.Texture, data: ContentImgData} | null>( ( resolve ) => {
+			return new Promise<{tex:THREE.Texture, data: ContentImgData} | null>( ( resolve, reject ) => {
+
+				const onClose = () => {
+
+					this.removeEventListener( 'close', onClose );
+
+					reject();
+
+				};
+
+				this.addEventListener( 'close', onClose );
 
 				this.loader.load( item.url, ( tex ) => {
 
 					resolve( { tex, data: item } );
 
+					this.removeEventListener( 'close', onClose );
+
 				}, undefined, () => {
 
 					resolve( null );
+
+					this.removeEventListener( 'close', onClose );
 
 				} );
 
@@ -122,26 +139,60 @@ export class Thumbnail extends THREE.Object3D {
 
 		} );
 
-		let texList = await Promise.all( prms );
+		try {
 
-		this.textures.length = 0;
+			let texList = await Promise.all( prms );
 
-		texList.forEach( item => {
+			this.textures.length = 0;
 
-			if ( item ) {
+			texList.forEach( item => {
 
-				this.textures.push( item );
+				if ( item ) {
 
-			}
+					this.textures.push( item );
 
+				}
+
+			} );
+
+			this.curerntImgIndex = - 1;
+
+			this.meshList.forEach( ( item, index ) => {
+
+				this.updateImg( index );
+
+				window.gManager.eRay.addTouchableObject( item );
+
+			} );
+
+			this.viewing = true;
+
+			await this.animator.animate( 'thumbVisibility', 1, 2 );
+
+		} catch {
+
+			throw new Error( );
+
+		}
+
+	}
+
+	public async close() {
+
+		this.dispatchEvent( {
+			type: 'close'
 		} );
-
-		this.curerntImgIndex = - 1;
 
 		this.meshList.forEach( ( item, index ) => {
 
-			this.updateImg( index );
+			window.gManager.eRay.removeTouchableObject( item );
 
+		} );
+
+		await this.animator.animate( 'thumbVisibility', 0, 2 );
+
+		this.dispatchEvent( {
+			type: 'closed'
 		} );
 
 	}

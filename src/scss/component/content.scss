@@ -18,6 +18,13 @@
 	&-title {
 		font-family: $bebas;
 		font-size: 58px;
+		
+		opacity: 0;
+		transition: opacity 2s;
+		
+		[data-content_visibility="true"] & {
+			opacity: 1;
+		}
 	}
 
 	&-img {
@@ -35,9 +42,25 @@
 		background-color: rgba($color: #000000, $alpha: 0.2);
 		padding: 5px;
 		border-radius: 3px 3px;
+		
+		opacity: 0;
+		transition: opacity 2s;
+		
+		[data-content_visibility="true"] & {
+			opacity: 1;
+		}
+		
 	}
 
 	&-link {
+
+		opacity: 0;
+		transition: opacity 2s;
+		
+		[data-content_visibility="true"] & {
+			opacity: 1;
+		}
+		
 		a {
 			font-family: $roboto;
 			color: #fff;
@@ -59,6 +82,13 @@
 		right: 0;
 		bottom: 0;
 		text-align: right;
+
+		opacity: 0;
+		transition: opacity 2s;
+		
+		[data-content_visibility="true"] & {
+			opacity: 1;
+		}
 
 		&-btn {
 			font-size: 14px;

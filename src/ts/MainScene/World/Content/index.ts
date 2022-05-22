@@ -114,15 +114,7 @@ export class Content extends THREE.Object3D {
 
 		this.setContentData( content );
 
-		if ( ! this.viewing ) {
-
-			this.animator.animate( 'contentVisibility', 1, 1, () => {
-
-				this.contentElm.setAttribute( 'data-content_visibility', 'true' );
-
-			} );
-
-		}
+		this.contentElm.setAttribute( 'data-content_visibility', 'true' );
 
 	}
 
@@ -140,7 +132,7 @@ export class Content extends THREE.Object3D {
 
 		( aElm.querySelector( 'span' ) as HTMLSpanElement ).innerText = data.linkLabel;
 
-		this.thumbnail.setImgs( data.images );
+		this.thumbnail.open( data.images );
 
 	}
 
@@ -148,7 +140,9 @@ export class Content extends THREE.Object3D {
 
 		this.viewing = false;
 
-		this.contentElm.setAttribute( 'data-content_visibility', 'true' );
+		this.contentElm.setAttribute( 'data-content_visibility', 'false' );
+
+		this.thumbnail.close();
 
 		this.animator.animate( 'contentVisibility', 1, 1, () => {
 
