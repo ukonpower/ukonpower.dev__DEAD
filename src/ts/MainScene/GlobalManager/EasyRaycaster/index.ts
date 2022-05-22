@@ -167,7 +167,7 @@ export class EasyRaycaster extends THREE.EventDispatcher {
 
 	}
 
-	public removeTouchableObject( mesh: THREE.Mesh ) {
+	public removeTouchableObject( mesh: THREE.Object3D ) {
 
 		const index = this.touchableObjects.findIndex( ( item ) => {
 

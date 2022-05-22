@@ -7,10 +7,10 @@ import { PowerMesh } from 'power-mesh';
 import { Triangle } from './Triangle';
 import { Trail } from './Trail';
 import { Particles } from './Particles';
-import { Face } from './Face';
-import { TuringPattern } from './TuringPattern';
 import { Ring } from './Ring';
 import { Content } from './Content';
+import { ContentMesh } from './ContentMesh';
+import { UKONPOWER } from './ContentMesh/UKONPOWER';
 
 export class World extends THREE.Object3D {
 
@@ -24,20 +24,22 @@ export class World extends THREE.Object3D {
 
 	private customRoot: THREE.Object3D;
 	private commonRoot: THREE.Object3D;
-
-	// turing
-
-	private turingPattern: TuringPattern;
+	private contentMeshRoot: THREE.Object3D;
 
 	//  custom mesh
 
 	public backNoise: BackNoise;
 	public floor: Floor;
-	public face: Face;
 	public triangle: Triangle;
 	public trail: Trail;
 	public particles: Particles;
 	public ring: Ring;
+
+	// content mesh
+
+	public ukonpower: UKONPOWER;
+
+	public contentMeshList: ContentMesh[] = [];
 
 	// powermesh
 
@@ -55,9 +57,6 @@ export class World extends THREE.Object3D {
 		this.scene = scene;
 
 		this.commonUniforms = ORE.UniformsLib.mergeUniforms( parentUniforms, {
-			turingSize: {
-				value: new THREE.Vector2()
-			}
 		} );
 
 		/*-------------------------------
@@ -72,6 +71,7 @@ export class World extends THREE.Object3D {
 
 		this.commonRoot = this.scene.getObjectByName( 'Common' ) as THREE.Object3D;
 		this.customRoot = this.scene.getObjectByName( 'Custom' ) as THREE.Object3D;
+		this.contentMeshRoot = this.scene.getObjectByName( 'ContentMesh' ) as THREE.Object3D;
 
 		/*-------------------------------
 			Light
@@ -99,12 +99,6 @@ export class World extends THREE.Object3D {
 		this.scene.add( light );
 
 		/*-------------------------------
-			TuringPattern
-		-------------------------------*/
-
-		this.turingPattern = new TuringPattern( this.renderer, this.commonUniforms );
-
-		/*-------------------------------
 			Background
 		-------------------------------*/
 
@@ -128,15 +122,17 @@ export class World extends THREE.Object3D {
 			Face
 		-------------------------------*/
 
-		this.face = new Face( this.customRoot.getObjectByName( 'Face' ) as THREE.Mesh, this.commonUniforms );
+		this.ukonpower = new UKONPOWER( this.renderer, this.contentMeshRoot.getObjectByName( 'UKONPOWER' ) as THREE.Mesh, this.commonUniforms );
+		this.contentMeshRoot.add( this.ukonpower );
+		this.powerMeshAll.push( this.ukonpower.face );
 
-		this.face.addEventListener( 'click', () => {
+		this.ukonpower.addEventListener( 'click', ( e ) => {
 
-			this.dispatchClick( 'content', this.face.name );
+			this.dispatchClick( 'content', e.name );
 
 		} );
 
-		this.powerMeshAll.push( this.face );
+		this.powerMeshAll.push( this.ukonpower.face );
 
 		/*-------------------------------
 			Triangle
@@ -161,19 +157,6 @@ export class World extends THREE.Object3D {
 		this.particles.position.set( 0.0, 1.0, 11.0 );
 		this.particles.frustumCulled = false;
 		this.scene.add( this.particles );
-
-		/*-------------------------------
-			Turing Pattern
-		-------------------------------*/
-
-		this.turingPattern = new TuringPattern( this.renderer, this.commonUniforms );
-		this.commonUniforms.turingSize.value.copy( this.turingPattern.turingPatternRenderer.size );
-
-		window.setInterval( () => {
-
-			this.turingPattern.noise( 5 );
-
-		}, 5000 );
 
 		/*-------------------------------
 			Ring
@@ -225,24 +208,16 @@ export class World extends THREE.Object3D {
 	public update( deltaTime: number, time: number, camera: THREE.PerspectiveCamera ) {
 
 		/*-------------------------------
-			Face
-		-------------------------------*/
-
-		this.face.update( deltaTime );
-
-		/*-------------------------------
 			Trail
 		-------------------------------*/
 
 		this.trail.update( deltaTime );
 
 		/*-------------------------------
-			TuringPattern
+			ukonpower
 		-------------------------------*/
 
-		this.turingPattern.update( deltaTime );
-
-		this.face.turing = this.turingPattern.turingPatternRenderer.texture;
+		this.ukonpower.update( deltaTime );
 
 		/*-------------------------------
 			Content

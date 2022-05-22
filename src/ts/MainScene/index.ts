@@ -206,7 +206,7 @@ export class MainScene extends ORE.BaseLayer {
 
 			if ( this.world && faceOPMaterialAction ) {
 
-				this.world.face.setAction( faceOPMaterialAction );
+				this.world.ukonpower.setAction( faceOPMaterialAction );
 
 			}
 
@@ -214,7 +214,7 @@ export class MainScene extends ORE.BaseLayer {
 
 			if ( this.cameraController && this.world ) {
 
-				this.world.face.play( "op" );
+				this.world.ukonpower.play( "op" );
 				let prm = this.cameraController.play( 'op' );
 
 				if ( prm ) {
@@ -242,7 +242,7 @@ export class MainScene extends ORE.BaseLayer {
 
 			// 	if ( this.world ) {
 
-			// 		this.world.face.updateFrame( current );
+			// 		this.world.ukonpower.updateFrame( current );
 
 			// 	}
 
