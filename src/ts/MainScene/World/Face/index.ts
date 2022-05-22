@@ -49,6 +49,21 @@ export class Face extends PowerMesh {
 
 		this.animator = animator;
 
+		this.name = 'face';
+
+		/*-------------------------------
+			raycaster
+		-------------------------------*/
+
+		window.gManager.eRay.addTouchableObject( this );
+		window.gManager.eRay.addEventListener( 'click/' + this.name, () => {
+
+			this.dispatchEvent( {
+				type: 'click'
+			} );
+
+		} );
+
 	}
 
 	public update( deltaTime: number ) {

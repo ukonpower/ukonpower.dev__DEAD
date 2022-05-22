@@ -150,22 +150,33 @@ export class CameraController extends EventEmitter {
 
 		const onUpdateCameraAction = ( action: ORE.AnimationAction ) => {
 
-			action.getValue( 'CameraPos', this.cameraTransform.position );
+			if ( this.playingAction != null && this.playingAction.cameraAction.name == action.name ) {
+
+				action.getValue( 'CameraPos', this.cameraTransform.position );
+
+			}
 
 		};
 
 		const onUpdateCameraTargetAction = ( action: ORE.AnimationAction ) => {
 
-			action.getValue( 'CameraTargetPos', this.cameraTarget.position );
+			if ( this.playingAction != null && this.playingAction.cameraTargetAction.name == action.name ) {
+
+				action.getValue( 'CameraTargetPos', this.cameraTarget.position );
+
+			}
 
 
 		};
 
 		const onUpdateLensAction = ( action: ORE.AnimationAction ) => {
 
-			this.focalLength = action.getValue<number>( 'FocalLength' ) || this.focalLength;
+			if ( this.playingAction != null && this.playingAction.lensAction.name == action.name ) {
 
-			this.resize();
+				this.focalLength = action.getValue<number>( 'FocalLength' ) || this.focalLength;
+				this.resize();
+
+			}
 
 		};
 
@@ -199,11 +210,13 @@ export class CameraController extends EventEmitter {
 
 	}
 
-	public play( type: string, skip?: boolean ) {
+	public async play( type: string, skip?: boolean ) {
 
 		if ( ! this.animationActions ) return;
 
 		this.playingAction = undefined;
+
+		let promise: Promise<any> | null = null;
 
 		if ( type == 'op' ) {
 
@@ -223,20 +236,17 @@ export class CameraController extends EventEmitter {
 			} else {
 
 				this.animator.setValue( 'cameraAnimation', start );
-				return this.animator.animate( 'cameraAnimation', end, frame.duration / 30.0 );
+				promise = this.animator.animate( 'cameraAnimation', end, frame.duration / 30.0 );
 
 			}
 
 		} else if ( type == 'content' ) {
 
 			let action = this.animationActions.content;
-			action.cameraAction.updateFrame( action.cameraAction.frame.end );
-			action.cameraTargetAction.updateFrame( action.cameraTargetAction.frame.end );
-			action.lensAction.updateFrame( action.lensAction.frame.end );
 
-			let newPos = action.cameraAction.getValue( 'CameraPos' );
-			let newTargetPos = action.cameraTargetAction.getValue( 'CameraTargetPos' );
-			let newLens = action.cameraTargetAction.getValue( 'CameraTargetPos' );
+			let newPos = action.cameraAction.getValueAt( 'CameraPos', action.cameraAction.frame.end, new THREE.Vector3() );
+			let newTargetPos = action.cameraTargetAction.getValueAt( 'CameraTargetPos', action.cameraTargetAction.frame.end, new THREE.Vector3() );
+			let newLens = action.lensAction.getValueAt( 'FocalLength', action.lensAction.frame.end );
 
 			this.animator.setValue( 'cameraPos', this.cameraTransform.position );
 			this.animator.setValue( 'cameraTargetPos', this.cameraTarget.position );
@@ -244,13 +254,35 @@ export class CameraController extends EventEmitter {
 
 			let duration = 5.0;
 
-			this.animator.animate( 'cameraPos', newPos, duration );
-			this.animator.animate( 'cameraTargetPos', newTargetPos, duration );
-			return this.animator.animate( 'cameraFocalLength', 20, duration );
+			promise = Promise.all( [
+				this.animator.animate( 'cameraPos', newPos, duration ),
+				this.animator.animate( 'cameraTargetPos', newTargetPos, duration ),
+				this.animator.animate( 'cameraFocalLength', 20, duration )
+			] );
 
+		} else if ( type == 'contentClose' ) {
+
+			let action = this.animationActions.op;
+
+			let newPos = action.cameraAction.getValueAt( 'CameraPos', action.cameraAction.frame.end, new THREE.Vector3() );
+			let newTargetPos = action.cameraTargetAction.getValueAt( 'CameraTargetPos', action.cameraTargetAction.frame.end, new THREE.Vector3() );
+			let newLens = action.lensAction.getValueAt( 'FocalLength', action.lensAction.frame.end );
+
+			this.animator.setValue( 'cameraPos', this.cameraTransform.position );
+			this.animator.setValue( 'cameraTargetPos', this.cameraTarget.position );
+			this.animator.setValue( 'cameraFocalLength', this.focalLength );
+
+			let duration = 5.0;
+
+			promise = Promise.all( [
+				this.animator.animate( 'cameraPos', newPos, duration ),
+				this.animator.animate( 'cameraTargetPos', newTargetPos, duration ),
+				this.animator.animate( 'cameraFocalLength', newLens, duration )
+			] );
 
 		}
 
+		return promise || Promise.resolve;
 
 	}
 
@@ -265,7 +297,6 @@ export class CameraController extends EventEmitter {
 			this.layerInfoMem = layerInfo;
 
 		}
-
 
 		if ( this.layerInfoMem ) {
 

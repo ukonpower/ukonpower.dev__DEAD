@@ -17,6 +17,7 @@ export class World extends THREE.Object3D {
 	private renderer: THREE.WebGLRenderer;
 	private scene: THREE.Scene;
 	private commonUniforms: ORE.Uniforms;
+
 	private animator: ORE.Animator;
 
 	private background: Background;
@@ -128,6 +129,13 @@ export class World extends THREE.Object3D {
 		-------------------------------*/
 
 		this.face = new Face( this.customRoot.getObjectByName( 'Face' ) as THREE.Mesh, this.commonUniforms );
+
+		this.face.addEventListener( 'click', () => {
+
+			this.dispatchClick( 'content', this.face.name );
+
+		} );
+
 		this.powerMeshAll.push( this.face );
 
 		/*-------------------------------
@@ -259,6 +267,16 @@ export class World extends THREE.Object3D {
 		} );
 
 		this.trail.updateEnvMap( envMap );
+
+	}
+
+	private dispatchClick( clickType: string, meshName: string ) {
+
+		this.dispatchEvent( {
+			type: 'click',
+			clickType,
+			meshName
+		} );
 
 	}
 

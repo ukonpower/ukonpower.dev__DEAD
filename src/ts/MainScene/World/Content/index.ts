@@ -18,6 +18,7 @@ export class Content extends THREE.Object3D {
 	private domCanvasElm: HTMLElement;
 	private domCanvasCameraElm: HTMLElement;
 	private contentElm: HTMLElement;
+	private backBtnElm: HTMLButtonElement;
 
 	private domSize: THREE.Vector2 = new THREE.Vector2();
 	private domSizeHalf: THREE.Vector2 = new THREE.Vector2();
@@ -53,6 +54,17 @@ export class Content extends THREE.Object3D {
 		this.contentElm = document.querySelector( '.content' ) as HTMLElement;
 		this.domCanvasElm = document.querySelector( '.domCanvas' ) as HTMLElement;
 		this.domCanvasCameraElm = document.querySelector( '.domCanvas-camera' ) as HTMLElement;
+
+		/*-------------------------------
+			BackButton
+		-------------------------------*/
+
+		this.backBtnElm = document.querySelector( '.content-back-btn' ) as HTMLButtonElement;
+		this.backBtnElm.addEventListener( 'click', () => {
+
+			this.dispatchEvent( { type: 'close' } );
+
+		} );
 
 		/*-------------------------------
 			Mesh

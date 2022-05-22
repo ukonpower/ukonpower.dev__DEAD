@@ -140,6 +140,27 @@ export class MainScene extends ORE.BaseLayer {
 
 		}
 
+		// click
+
+		this.world.addEventListener( 'click', ( e ) => {
+
+			let clickType = e.clickType;
+			let meshName = e.meshName;
+
+			if ( clickType == 'content' ) {
+
+				this.openContent( 'Recollection' );
+
+			}
+
+		} );
+
+		this.world.content.addEventListener( 'close', () => {
+
+			this.closeContent();
+
+		} );
+
 		//  compile shaders
 
 		this.renderPipeline.resize( this.info.size.canvasPixelSize );
@@ -201,10 +222,6 @@ export class MainScene extends ORE.BaseLayer {
 					await prm;
 
 				}
-
-				this.world.content.openContent( 'Recollection' );
-
-				this.cameraController.play( 'content', false );
 
 				this.dispatchEvent( {
 					type: 'loaded'
@@ -268,6 +285,36 @@ export class MainScene extends ORE.BaseLayer {
 
 	}
 
+	/*-------------------------------
+		Content
+	-------------------------------*/
+
+	public openContent( contentName: string ) {
+
+		if ( this.world && this.cameraController ) {
+
+			this.world.content.openContent( contentName );
+			this.cameraController.play( 'content' );
+
+		}
+
+	}
+
+	public closeContent( ) {
+
+		if ( this.world && this.cameraController ) {
+
+			this.world.content.closeContent();
+			this.cameraController.play( 'contentClose' );
+
+		}
+
+	}
+
+	/*-------------------------------
+		Resize
+	-------------------------------*/
+
 	public onResize() {
 
 		super.onResize();
@@ -294,6 +341,10 @@ export class MainScene extends ORE.BaseLayer {
 		}
 
 	}
+
+	/*-------------------------------
+		Pointer Events
+	-------------------------------*/
 
 	public onHover( args: ORE.TouchEventArgs ) {
 
