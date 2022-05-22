@@ -86,11 +86,11 @@ export class Content extends THREE.Object3D {
 		this.thumbnail.position.y = 0.6;
 		this.contentMesh.add( this.thumbnail );
 
-		this.openContent( 'Recollection' );
-
 	}
 
 	public openContent( contentName: string ) {
+
+		this.viewing = true;
 
 		let content = ContentDataList.find( item => {
 

@@ -11,6 +11,11 @@ type CameraAnimationAction = {
 	lensAction: ORE.AnimationAction
 }
 
+type CameraAnimationActions = {
+	op: CameraAnimationAction,
+	content: CameraAnimationAction
+}
+
 export class CameraController extends EventEmitter {
 
 	private camera: THREE.PerspectiveCamera;
@@ -34,7 +39,8 @@ export class CameraController extends EventEmitter {
 	-------------------------------*/
 
 	private animator: ORE.Animator;
-	private animationActions?: CameraAnimationAction;
+	private animationActions?: CameraAnimationActions;
+	private playingAction?: CameraAnimationAction;
 
 	constructor( camera: THREE.PerspectiveCamera, cameraContainer: THREE.Object3D, cameraTarget: THREE.Object3D ) {
 
@@ -66,9 +72,27 @@ export class CameraController extends EventEmitter {
 		this.animator = window.gManager.animator;
 
 		this.animator.add( {
-			name: 'cameraOpFrame',
+			name: 'cameraAnimation',
 			initValue: 0,
 			easing: ORE.Easings.linear
+		} );
+
+		this.animator.add( {
+			name: 'cameraPos',
+			initValue: new THREE.Vector3(),
+			easing: ORE.Easings.easeInOutCubic
+		} );
+
+		this.animator.add( {
+			name: 'cameraTargetPos',
+			initValue: new THREE.Vector3(),
+			easing: ORE.Easings.easeInOutCubic
+		} );
+
+		this.animator.add( {
+			name: 'cameraFocalLength',
+			initValue: 0,
+			easing: ORE.Easings.easeInOutCubic
 		} );
 
 	}
@@ -92,9 +116,16 @@ export class CameraController extends EventEmitter {
 
 		}
 
-		if ( this.animator.isAnimatingVariable( 'cameraOpFrame' ) ) {
+		if ( this.animator.isAnimatingVariable( 'cameraAnimation' ) ) {
 
-			this.updateFrame( this.animator.get( 'cameraOpFrame' ) || 0 );
+			this.updateFrame( this.animator.get( 'cameraAnimation' ) || 0 );
+
+		} else if ( this.animator.isAnimatingVariable( 'cameraPos' ) ) {
+
+			this.cameraTransform.position.copy( this.animator.get( 'cameraPos' ) as THREE.Vector3 );
+			this.cameraTarget.position.copy( this.animator.get( 'cameraTargetPos' ) as THREE.Vector3 );
+			this.focalLength = this.animator.get( 'cameraFocalLength' ) || 1;
+			this.resize();
 
 		}
 
@@ -111,8 +142,7 @@ export class CameraController extends EventEmitter {
 		BC Animation
 	-------------------------------*/
 
-
-	public setAction( animationActions: CameraAnimationAction ) {
+	public setAction( animationActions: CameraAnimationActions ) {
 
 		this.emitEvent( 'updateAction' );
 
@@ -139,44 +169,88 @@ export class CameraController extends EventEmitter {
 
 		};
 
-		animationActions.cameraAction.addListener( 'update', onUpdateCameraAction );
-		animationActions.cameraTargetAction.addListener( 'update', onUpdateCameraTargetAction );
-		animationActions.lensAction.addListener( 'update', onUpdateLensAction );
+		// op events
+
+		let opActions = this.animationActions.op;
+
+		opActions.cameraAction.addListener( 'update', onUpdateCameraAction );
+		opActions.cameraTargetAction.addListener( 'update', onUpdateCameraTargetAction );
+		opActions.lensAction.addListener( 'update', onUpdateLensAction );
 
 		this.addOnceListener( 'updateAction', () => {
 
-			animationActions.cameraAction.removeListener( 'update', onUpdateCameraAction );
-			animationActions.cameraTargetAction.removeListener( 'update', onUpdateCameraTargetAction );
-			animationActions.lensAction.removeListener( 'update', onUpdateCameraAction );
+			opActions.cameraAction.removeListener( 'update', onUpdateCameraAction );
+			opActions.cameraTargetAction.removeListener( 'update', onUpdateCameraTargetAction );
+			opActions.lensAction.removeListener( 'update', onUpdateCameraAction );
 
 		} );
-
 
 	}
 
 	public updateFrame( frame: number ) {
 
-		if ( this.animationActions ) {
+		if ( this.playingAction ) {
 
-			this.animationActions.cameraAction.updateFrame( frame );
-			this.animationActions.cameraTargetAction.updateFrame( frame );
-			this.animationActions.lensAction.updateFrame( frame );
+			this.playingAction.cameraAction.updateFrame( frame );
+			this.playingAction.cameraTargetAction.updateFrame( frame );
+			this.playingAction.lensAction.updateFrame( frame );
 
 		}
 
 	}
 
-	public play( animationActions: CameraAnimationAction ) {
+	public play( type: string, skip?: boolean ) {
 
-		this.setAction( animationActions );
+		if ( ! this.animationActions ) return;
 
-		let frame = animationActions.cameraAction.frame;
+		this.playingAction = undefined;
 
-		let start = frame.start;
-		let end = frame.end;
+		if ( type == 'op' ) {
 
-		this.animator.setValue( 'cameraOpFrame', start );
-		this.animator.animate( 'cameraOpFrame', end, frame.duration / 30.0 );
+			let action = this.animationActions.op;
+
+			this.playingAction = action;
+
+			let frame = action.cameraAction.frame;
+
+			let start = frame.start;
+			let end = frame.end;
+
+			if ( skip ) {
+
+				this.updateFrame( end );
+
+			} else {
+
+				this.animator.setValue( 'cameraAnimation', start );
+				return this.animator.animate( 'cameraAnimation', end, frame.duration / 30.0 );
+
+			}
+
+		} else if ( type == 'content' ) {
+
+			let action = this.animationActions.content;
+			action.cameraAction.updateFrame( action.cameraAction.frame.end );
+			action.cameraTargetAction.updateFrame( action.cameraTargetAction.frame.end );
+			action.lensAction.updateFrame( action.lensAction.frame.end );
+
+			let newPos = action.cameraAction.getValue( 'CameraPos' );
+			let newTargetPos = action.cameraTargetAction.getValue( 'CameraTargetPos' );
+			let newLens = action.cameraTargetAction.getValue( 'CameraTargetPos' );
+
+			this.animator.setValue( 'cameraPos', this.cameraTransform.position );
+			this.animator.setValue( 'cameraTargetPos', this.cameraTarget.position );
+			this.animator.setValue( 'cameraFocalLength', this.focalLength );
+
+			let duration = 5.0;
+
+			this.animator.animate( 'cameraPos', newPos, duration );
+			this.animator.animate( 'cameraTargetPos', newTargetPos, duration );
+			return this.animator.animate( 'cameraFocalLength', 20, duration );
+
+
+		}
+
 
 	}
 

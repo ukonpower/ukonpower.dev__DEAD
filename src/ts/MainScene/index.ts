@@ -151,24 +151,31 @@ export class MainScene extends ORE.BaseLayer {
 
 		this.connector = new ORE.BlenderConnector();
 
-		this.connector.addListener( 'update/scene', ( connector: ORE.BlenderConnector ) => {
-
-			console.log( this.connector?.actions );
+		this.connector.addListener( 'update/scene', async ( connector: ORE.BlenderConnector ) => {
 
 			// camera
-			// let cameraAction = connector.getAction( 'OP_CameraAction' );
-			// let cameraTargetAction = connector.getAction( 'OP_CameraTargetAction' );
-			// let lensAction = connector.getAction( 'CameraAction.001' );
+			let cameraAction = connector.getAction( 'OP_CameraAction' ) as ORE.AnimationAction;
+			let cameraTargetAction = connector.getAction( 'OP_CameraTargetAction' ) as ORE.AnimationAction;
+			let lensAction = connector.getAction( 'CameraAction.001' ) as ORE.AnimationAction;
 
-			let cameraAction = connector.getAction( 'Content_CameraAction' );
-			let cameraTargetAction = connector.getAction( 'Content_CameraTargetAction' );
-			let lensAction = connector.getAction( 'CameraAction.001' );
+			let contentCameraAction = connector.getAction( 'Content_CameraAction' ) as ORE.AnimationAction;
+			let contentCameraTargetAction = connector.getAction( 'Content_CameraTargetAction' ) as ORE.AnimationAction;
+			let contentLensAction = connector.getAction( 'CameraAction.001' ) as ORE.AnimationAction;
 
+			if ( this.cameraController ) {
 
-			if ( cameraAction && cameraTargetAction && lensAction && this.cameraController ) {
-
-				this.cameraController.setAction( { cameraAction, cameraTargetAction, lensAction } );
-				// this.cameraController.play( { cameraAction, cameraTargetAction, lensAction } );
+				this.cameraController.setAction( {
+					op: {
+						cameraAction: cameraAction,
+						cameraTargetAction: cameraTargetAction,
+						lensAction: lensAction
+					},
+					content: {
+						cameraAction: contentCameraAction,
+						cameraTargetAction: contentCameraTargetAction,
+						lensAction: contentLensAction
+					}
+				} );
 
 			}
 
@@ -179,13 +186,25 @@ export class MainScene extends ORE.BaseLayer {
 			if ( this.world && faceOPMaterialAction ) {
 
 				this.world.face.setAction( faceOPMaterialAction );
-				// this.world.face.play( "op" );
 
 			}
 
 			// play opening
 
 			if ( this.cameraController && this.world ) {
+
+				this.world.face.play( "op" );
+				let prm = this.cameraController.play( 'op' );
+
+				if ( prm ) {
+
+					await prm;
+
+				}
+
+				this.world.content.openContent( 'Recollection' );
+
+				this.cameraController.play( 'content', false );
 
 				this.dispatchEvent( {
 					type: 'loaded'
@@ -200,17 +219,17 @@ export class MainScene extends ORE.BaseLayer {
 
 		this.connector.addListener( 'update/timeline', ( current: number ) => {
 
-			if ( this.cameraController ) {
+			// if ( this.cameraController ) {
 
-				this.cameraController.updateFrame( current );
+			// 	this.cameraController.updateFrame( current );
 
-				if ( this.world ) {
+			// 	if ( this.world ) {
 
-					this.world.face.updateFrame( current );
+			// 		this.world.face.updateFrame( current );
 
-				}
+			// 	}
 
-			}
+			// }
 
 		} );
 

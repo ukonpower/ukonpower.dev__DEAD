@@ -44,7 +44,7 @@ export class World extends THREE.Object3D {
 
 	// content
 
-	private content: Content;
+	public content: Content;
 
 	constructor( renderer: THREE.WebGLRenderer, scene: THREE.Scene, parentUniforms: ORE.Uniforms ) {
 
