@@ -91,6 +91,8 @@ export class Thumbnail extends THREE.Object3D {
 
 			this.meshList.push( mesh );
 
+			this.visible = false;
+
 		}
 
 		/*-------------------------------
@@ -167,6 +169,8 @@ export class Thumbnail extends THREE.Object3D {
 
 			this.viewing = true;
 
+			this.visible = true;
+
 			await this.animator.animate( 'thumbVisibility', 1, 2 );
 
 		} catch {
@@ -190,6 +194,8 @@ export class Thumbnail extends THREE.Object3D {
 		} );
 
 		await this.animator.animate( 'thumbVisibility', 0, 2 );
+
+		this.visible = false;
 
 		this.dispatchEvent( {
 			type: 'closed'

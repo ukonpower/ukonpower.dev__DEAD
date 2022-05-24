@@ -6,13 +6,13 @@ import contentFrag from './shaders/content.fs';
 import { ContentData, ContentDataList } from '../../../../data/content';
 import { Thumbnail } from './Thumbnail';
 
-export class ContentInfo extends THREE.Object3D {
+export class ContentInfo extends THREE.EventDispatcher {
 
 	private commonUniforms: ORE.Uniforms;
 
 	private animator: ORE.Animator;
 
-	private contentMesh: THREE.Mesh;
+	private mesh: THREE.Mesh;
 	private contentMeshSize: THREE.Vector3;
 
 	private domCanvasElm: HTMLElement;
@@ -24,7 +24,6 @@ export class ContentInfo extends THREE.Object3D {
 	private domSizeHalf: THREE.Vector2 = new THREE.Vector2();
 
 	private thumbnail: Thumbnail;
-	private thumbnailChangeTimer: number | null = null;
 
 	// state
 	private viewing: boolean = false;
@@ -43,7 +42,7 @@ export class ContentInfo extends THREE.Object3D {
 		this.animator = window.gManager.animator;
 
 		this.commonUniforms.visibility = this.animator.add( {
-			name: 'contentVisibility',
+			name: 'contentInfoVisibility',
 			initValue: 0
 		} );
 
@@ -70,20 +69,23 @@ export class ContentInfo extends THREE.Object3D {
 			Mesh
 		-------------------------------*/
 
-		this.contentMesh = contentMesh;
-		this.contentMeshSize = new THREE.Vector3();
+		this.mesh = contentMesh;
 
-		let ymem = this.contentMesh.rotation.y;
-		this.contentMesh.rotation.y = 0;
-		new THREE.Box3().setFromObject( this.contentMesh ).getSize( this.contentMeshSize );
-		this.contentMesh.rotation.y = ymem;
-
-		this.contentMesh.material = new THREE.ShaderMaterial( {
+		this.mesh.material = new THREE.ShaderMaterial( {
 			vertexShader: contentVert,
 			fragmentShader: contentFrag,
 			uniforms: this.commonUniforms,
 			visible: false
 		} );
+
+		// calc size
+
+		this.contentMeshSize = new THREE.Vector3();
+
+		let ymem = this.mesh.rotation.y;
+		this.mesh.rotation.y = 0;
+		new THREE.Box3().setFromObject( this.mesh ).getSize( this.contentMeshSize );
+		this.mesh.rotation.y = ymem;
 
 		let elmSize = 450;
 		this.contentElm.style.width = elmSize + 'px';
@@ -96,7 +98,7 @@ export class ContentInfo extends THREE.Object3D {
 		this.thumbnail = new Thumbnail( this.commonUniforms );
 		this.thumbnail.scale.setScalar( this.contentMeshSize.x * 0.7 );
 		this.thumbnail.position.y = 0.6;
-		this.contentMesh.add( this.thumbnail );
+		this.mesh.add( this.thumbnail );
 
 	}
 
@@ -144,7 +146,7 @@ export class ContentInfo extends THREE.Object3D {
 
 		this.thumbnail.close();
 
-		this.animator.animate( 'contentVisibility', 1, 1, () => {
+		this.animator.animate( 'contentInfoVisibility', 1, 1, () => {
 
 		} );
 
@@ -171,7 +173,7 @@ export class ContentInfo extends THREE.Object3D {
 
 		this.domCanvasElm.style.perspective = fov + 'px';
 		this.domCanvasCameraElm.style.transform = 'translateZ(' + fov + 'px)' + this.getCameraCSSMatrix( camera.matrixWorldInverse ) + 'translate(' + this.domSizeHalf.x + 'px,' + this.domSizeHalf.y + 'px)';
-		this.contentElm.style.transform = this.getObjectCSSMatrix( this.contentMesh.matrixWorld.multiply( new THREE.Matrix4().makeScale( 1.0 / this.contentElm.clientWidth * this.contentMeshSize.x, 1.0 / this.contentElm.clientHeight * this.contentMeshSize.y, 1.0 ) ) );
+		this.contentElm.style.transform = this.getObjectCSSMatrix( this.mesh.matrixWorld.multiply( new THREE.Matrix4().makeScale( 1.0 / this.contentElm.clientWidth * this.contentMeshSize.x, 1.0 / this.contentElm.clientHeight * this.contentMeshSize.y, 1.0 ) ) );
 
 		this.thumbnail.update( deltaTime );
 

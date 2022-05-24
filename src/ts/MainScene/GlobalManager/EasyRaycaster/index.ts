@@ -38,7 +38,7 @@ export class EasyRaycaster extends THREE.EventDispatcher {
 		} );
 
 		this.dispatchEvent( {
-			type: type + '/' + name,
+			type: type + '/' + name.split( '/' )[ 0 ],
 			intersection: intersection
 		} );
 

@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import * as ORE from 'ore-three';
 import { ContentInfo } from './ContentInfo';
-import { UKONPOWER } from '../ContentMesh/UKONPOWER';
+import { UKONPOWER } from './ContentMesh/UKONPOWER';
+import { ContentMesh } from './ContentMesh';
+import { Recollection } from './ContentMesh/Recollection';
 
 export class Content extends THREE.Object3D {
 
@@ -17,7 +19,10 @@ export class Content extends THREE.Object3D {
 
 	// content mesh
 
+	public contentMeshList: ContentMesh[] = [];
+
 	public ukonpower: UKONPOWER;
+	public recollection: Recollection;
 
 	constructor( renderer: THREE.WebGLRenderer, contentRoot: THREE.Object3D, parentUniforms: ORE.Uniforms ) {
 
@@ -33,7 +38,7 @@ export class Content extends THREE.Object3D {
 
 
 		/*-------------------------------
-			Content
+			Content Info
 		-------------------------------*/
 
 		this.info = new ContentInfo( this.root.getObjectByName( 'ContentInfo' )as THREE.Mesh, this.commonUniforms );
@@ -46,8 +51,6 @@ export class Content extends THREE.Object3D {
 
 		} );
 
-		this.add( this.info );
-
 		/*-------------------------------
 			Face
 		-------------------------------*/
@@ -55,6 +58,19 @@ export class Content extends THREE.Object3D {
 		this.ukonpower = new UKONPOWER( this.renderer, this.root.getObjectByName( 'UKONPOWER' ) as THREE.Mesh, this.commonUniforms );
 		this.ukonpower.addEventListener( 'click', this.dispatchClick.bind( this ) );
 		this.root.add( this.ukonpower );
+
+		this.ukonpower.show();
+
+		this.contentMeshList.push( this.ukonpower );
+
+		/*-------------------------------
+			Recollection
+		-------------------------------*/
+
+		this.recollection = new Recollection( this.root.getObjectByName( 'Recollection' ) as THREE.Mesh, this.commonUniforms );
+		this.recollection.addEventListener( 'click', this.dispatchClick.bind( this ) );
+
+		this.contentMeshList.push( this.recollection );
 
 	}
 

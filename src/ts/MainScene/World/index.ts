@@ -8,7 +8,6 @@ import { Triangle } from './Triangle';
 import { Trail } from './Trail';
 import { Particles } from './Particles';
 import { Ring } from './Ring';
-import { ContentMesh } from './ContentMesh';
 import { Content } from './Content';
 
 export class World extends THREE.Object3D {
@@ -32,10 +31,6 @@ export class World extends THREE.Object3D {
 	public trail: Trail;
 	public particles: Particles;
 	public ring: Ring;
-
-	// content mesh
-
-	public contentMeshList: ContentMesh[] = [];
 
 	// powermesh
 
