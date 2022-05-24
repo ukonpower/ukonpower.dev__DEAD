@@ -12,7 +12,7 @@ export class Recollection extends ContentMesh {
 
 	constructor( mesh: THREE.Mesh, parentUniforms: ORE.Uniforms ) {
 
-		super( 'Recollection', parentUniforms );
+		super( 'recollection', parentUniforms );
 
 		this.commonUniforms = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {
 		} );
@@ -40,6 +40,7 @@ export class Recollection extends ContentMesh {
 	-------------------------------*/
 
 	public update( deltaTime: number ) {
+
 	}
 
 }

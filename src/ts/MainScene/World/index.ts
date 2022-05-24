@@ -176,12 +176,6 @@ export class World extends THREE.Object3D {
 
 		this.content = new Content( this.renderer, this.scene.getObjectByName( 'Content' ) as THREE.Object3D, this.commonUniforms );
 
-		this.content.addEventListener( 'click', ( e ) => {
-
-			this.dispatchClick( 'content', e.contentName );
-
-		} );
-
 		this.powerMeshAll.push( this.content.ukonpower.face );
 
 	}
@@ -217,16 +211,6 @@ export class World extends THREE.Object3D {
 		} );
 
 		this.trail.updateEnvMap( envMap );
-
-	}
-
-	private dispatchClick( clickType: string, meshName: string ) {
-
-		this.dispatchEvent( {
-			type: 'click',
-			clickType,
-			meshName
-		} );
 
 	}
 

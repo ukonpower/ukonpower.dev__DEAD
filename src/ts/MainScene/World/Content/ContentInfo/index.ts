@@ -132,7 +132,7 @@ export class ContentInfo extends THREE.EventDispatcher {
 		let aElm = linkWrapperElm.querySelector( 'a' ) as HTMLAnchorElement;
 		aElm.href = data.link;
 
-		( aElm.querySelector( 'span' ) as HTMLSpanElement ).innerText = data.linkLabel;
+		( aElm.querySelector( 'span' ) as HTMLSpanElement ).innerText = data.linkDisplay;
 
 		this.thumbnail.open( data.images );
 

@@ -5,17 +5,34 @@ export type ContentImgData = {
 
 export type ContentData = {
 	title: string,
+	titleDisplay: string,
 	link: string,
-	linkLabel: string,
+	linkDisplay: string,
 	description: string,
 	images: ContentImgData[],
 }
 
 export const ContentDataList: ContentData[] = [
 	{
-		title: 'Recollection',
+		title: 'ukonpower',
+		titleDisplay: 'UKONPOWER',
+		link: 'https://ukon.dev/',
+		linkDisplay: 'ukon.dev',
+		images: [
+			{
+				url: './assets/scene/img/content/recollection/recollection_0.png',
+				link: 'https://recollection.ukon.dev/'
+			},
+		],
+		description: `
+			I AM UKONPOWER
+		`
+	},
+	{
+		title: 'recollection',
+		titleDisplay: 'Recollection',
 		link: 'https://recollection.ukon.dev/',
-		linkLabel: 'recollection.ukon.dev',
+		linkDisplay: 'recollection.ukon.dev',
 		images: [
 			{
 				url: './assets/scene/img/content/recollection/recollection_0.png',

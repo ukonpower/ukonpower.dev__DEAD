@@ -4,6 +4,7 @@ import { ContentInfo } from './ContentInfo';
 import { UKONPOWER } from './ContentMesh/UKONPOWER';
 import { ContentMesh } from './ContentMesh';
 import { Recollection } from './ContentMesh/Recollection';
+import { ContentControls } from './ContentControls';
 
 export class Content extends THREE.Object3D {
 
@@ -12,6 +13,10 @@ export class Content extends THREE.Object3D {
 	private commonUniforms: ORE.Uniforms;
 
 	public root: THREE.Object3D;
+
+	// controls
+
+	public controls: ContentControls;
 
 	// info
 
@@ -36,6 +41,17 @@ export class Content extends THREE.Object3D {
 
 		} );
 
+		/*-------------------------------
+			Controls
+		-------------------------------*/
+
+		this.controls = new ContentControls();
+
+		this.controls.addListener( 'click', ( contentName: string ) => {
+
+			this.select( contentName );
+
+		} );
 
 		/*-------------------------------
 			Content Info
@@ -45,42 +61,83 @@ export class Content extends THREE.Object3D {
 
 		this.info.addEventListener( 'close', () => {
 
-			this.dispatchEvent( {
-				type: 'close'
-			} );
+			this.close();
 
 		} );
 
 		/*-------------------------------
-			Face
+			Mesh
 		-------------------------------*/
 
-		this.ukonpower = new UKONPOWER( this.renderer, this.root.getObjectByName( 'UKONPOWER' ) as THREE.Mesh, this.commonUniforms );
-		this.ukonpower.addEventListener( 'click', this.dispatchClick.bind( this ) );
-		this.root.add( this.ukonpower );
+		const onClickMesh = ( e: THREE.Event ) => {
 
-		this.ukonpower.show();
+			this.open( e.name );
+
+		};
+
+		// ukonpower
+
+		this.ukonpower = new UKONPOWER( this.renderer, this.root.getObjectByName( 'UKONPOWER' ) as THREE.Mesh, this.commonUniforms );
+		this.ukonpower.addEventListener( 'click', onClickMesh );
+		this.root.add( this.ukonpower );
 
 		this.contentMeshList.push( this.ukonpower );
 
-		/*-------------------------------
-			Recollection
-		-------------------------------*/
+		// recollection
 
 		this.recollection = new Recollection( this.root.getObjectByName( 'Recollection' ) as THREE.Mesh, this.commonUniforms );
-		this.recollection.addEventListener( 'click', this.dispatchClick.bind( this ) );
+		this.recollection.addEventListener( 'click', onClickMesh );
+		this.root.add( this.recollection );
 
 		this.contentMeshList.push( this.recollection );
+
+		/*-------------------------------
+			init
+		-------------------------------*/
+
+		this.ukonpower.show();
+
+	}
+
+	public select( contentName: string ) {
+
+		this.dispatchEvent( {
+			type: 'select',
+			contentName
+		} );
+
+		this.contentMeshList.forEach( item => {
+
+			if ( item.name == contentName ) {
+
+				item.show();
+
+			} else {
+
+				item.hide();
+
+			}
+
+		} );
 
 	}
 
 	public open( contentName: string ) {
+
+		this.dispatchEvent( {
+			type: 'open',
+			contentName
+		} );
 
 		this.info.open( contentName );
 
 	}
 
 	public close() {
+
+		this.dispatchEvent( {
+			type: 'close',
+		} );
 
 		this.info.close();
 
@@ -97,15 +154,6 @@ export class Content extends THREE.Object3D {
 		this.info.update( deltaTime, camera );
 
 		this.ukonpower.update( deltaTime );
-
-	}
-
-	private dispatchClick( e: THREE.Event ) {
-
-		this.dispatchEvent( {
-			type: 'click',
-			contentName: e.name,
-		} );
 
 	}
 

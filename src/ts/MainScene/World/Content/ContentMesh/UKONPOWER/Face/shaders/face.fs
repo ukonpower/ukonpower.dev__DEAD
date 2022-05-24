@@ -6,6 +6,7 @@ uniform sampler2D turingTex;
 uniform sampler2D noiseTex;
 uniform vec2 turingSize;
 uniform float noise;
+uniform float visibility;
 uniform float openingVisibility;
 varying float vVisibility;
 
@@ -495,6 +496,8 @@ void main( void ) {
 	float yVisibility = smoothstep( 0.0, 1.0, -borderNoise * 0.7 + openingVisibility * 1.7 );
 	float borderVisibility = smoothstep( 0.0, 0.2, -1.0 + bUv.y + yVisibility * 1.2 );
 	mat.opacity = smoothstep( 0.0, 0.5, borderVisibility);
+
+	mat.opacity *= visibility;
 
 	/*-------------------------------
 		Turing Pattern

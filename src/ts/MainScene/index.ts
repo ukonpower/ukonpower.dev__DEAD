@@ -140,18 +140,9 @@ export class MainScene extends ORE.BaseLayer {
 
 		}
 
-		// click
+		this.world.content.addEventListener( 'open', ( e ) => {
 
-		this.world.addEventListener( 'click', ( e ) => {
-
-			let clickType = e.clickType;
-			let meshName = e.meshName;
-
-			if ( clickType == 'content' ) {
-
-				this.openContent( 'Recollection' );
-
-			}
+			this.openContent( e.contentName );
 
 		} );
 
@@ -214,9 +205,11 @@ export class MainScene extends ORE.BaseLayer {
 
 			if ( this.cameraController && this.world ) {
 
-				this.world.content.ukonpower.play( "op" );
+				let skip = true;
 
-				let prm = this.cameraController.play( 'op' );
+				this.world.content.ukonpower.play( "op", skip );
+
+				let prm = this.cameraController.play( 'op', skip );
 
 				if ( prm ) {
 
@@ -292,9 +285,8 @@ export class MainScene extends ORE.BaseLayer {
 
 	public openContent( contentName: string ) {
 
-		if ( this.world && this.cameraController ) {
+		if ( this.cameraController ) {
 
-			this.world.content.open( contentName );
 			this.cameraController.play( 'content' );
 
 		}
@@ -303,9 +295,8 @@ export class MainScene extends ORE.BaseLayer {
 
 	public closeContent( ) {
 
-		if ( this.world && this.cameraController ) {
+		if ( this.cameraController ) {
 
-			this.world.content.close();
 			this.cameraController.play( 'contentClose' );
 
 		}
