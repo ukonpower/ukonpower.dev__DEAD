@@ -8,9 +8,8 @@ import { Triangle } from './Triangle';
 import { Trail } from './Trail';
 import { Particles } from './Particles';
 import { Ring } from './Ring';
-import { Content } from './Content';
 import { ContentMesh } from './ContentMesh';
-import { UKONPOWER } from './ContentMesh/UKONPOWER';
+import { Content } from './Content';
 
 export class World extends THREE.Object3D {
 
@@ -24,7 +23,6 @@ export class World extends THREE.Object3D {
 
 	private customRoot: THREE.Object3D;
 	private commonRoot: THREE.Object3D;
-	private contentMeshRoot: THREE.Object3D;
 
 	//  custom mesh
 
@@ -36,8 +34,6 @@ export class World extends THREE.Object3D {
 	public ring: Ring;
 
 	// content mesh
-
-	public ukonpower: UKONPOWER;
 
 	public contentMeshList: ContentMesh[] = [];
 
@@ -71,7 +67,6 @@ export class World extends THREE.Object3D {
 
 		this.commonRoot = this.scene.getObjectByName( 'Common' ) as THREE.Object3D;
 		this.customRoot = this.scene.getObjectByName( 'Custom' ) as THREE.Object3D;
-		this.contentMeshRoot = this.scene.getObjectByName( 'ContentMesh' ) as THREE.Object3D;
 
 		/*-------------------------------
 			Light
@@ -117,22 +112,6 @@ export class World extends THREE.Object3D {
 
 		this.floor = new Floor( this.customRoot.getObjectByName( 'Floor' ) as THREE.Mesh, this.commonUniforms );
 		this.powerMeshAll.push( this.floor );
-
-		/*-------------------------------
-			Face
-		-------------------------------*/
-
-		this.ukonpower = new UKONPOWER( this.renderer, this.contentMeshRoot.getObjectByName( 'UKONPOWER' ) as THREE.Mesh, this.commonUniforms );
-		this.contentMeshRoot.add( this.ukonpower );
-		this.powerMeshAll.push( this.ukonpower.face );
-
-		this.ukonpower.addEventListener( 'click', ( e ) => {
-
-			this.dispatchClick( 'content', e.name );
-
-		} );
-
-		this.powerMeshAll.push( this.ukonpower.face );
 
 		/*-------------------------------
 			Triangle
@@ -200,8 +179,15 @@ export class World extends THREE.Object3D {
 			Content
 		-------------------------------*/
 
-		this.content = new Content( this.customRoot.getObjectByName( 'Content' )as THREE.Mesh, this.commonUniforms );
-		this.add( this.content );
+		this.content = new Content( this.renderer, this.scene.getObjectByName( 'Content' ) as THREE.Object3D, this.commonUniforms );
+
+		this.content.addEventListener( 'click', ( e ) => {
+
+			this.dispatchClick( 'content', e.contentName );
+
+		} );
+
+		this.powerMeshAll.push( this.content.ukonpower.face );
 
 	}
 
@@ -212,12 +198,6 @@ export class World extends THREE.Object3D {
 		-------------------------------*/
 
 		this.trail.update( deltaTime );
-
-		/*-------------------------------
-			ukonpower
-		-------------------------------*/
-
-		this.ukonpower.update( deltaTime );
 
 		/*-------------------------------
 			Content

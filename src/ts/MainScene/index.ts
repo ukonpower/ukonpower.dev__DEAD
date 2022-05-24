@@ -206,7 +206,7 @@ export class MainScene extends ORE.BaseLayer {
 
 			if ( this.world && faceOPMaterialAction ) {
 
-				this.world.ukonpower.setAction( faceOPMaterialAction );
+				this.world.content.ukonpower.setAction( faceOPMaterialAction );
 
 			}
 
@@ -214,7 +214,8 @@ export class MainScene extends ORE.BaseLayer {
 
 			if ( this.cameraController && this.world ) {
 
-				this.world.ukonpower.play( "op" );
+				this.world.content.ukonpower.play( "op" );
+
 				let prm = this.cameraController.play( 'op' );
 
 				if ( prm ) {
@@ -293,7 +294,7 @@ export class MainScene extends ORE.BaseLayer {
 
 		if ( this.world && this.cameraController ) {
 
-			this.world.content.openContent( contentName );
+			this.world.content.open( contentName );
 			this.cameraController.play( 'content' );
 
 		}
@@ -304,7 +305,7 @@ export class MainScene extends ORE.BaseLayer {
 
 		if ( this.world && this.cameraController ) {
 
-			this.world.content.closeContent();
+			this.world.content.close();
 			this.cameraController.play( 'contentClose' );
 
 		}
