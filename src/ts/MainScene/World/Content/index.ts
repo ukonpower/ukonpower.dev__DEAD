@@ -38,7 +38,9 @@ export class Content extends THREE.Object3D {
 		this.root = contentRoot;
 
 		this.commonUniforms = ORE.UniformsLib.mergeUniforms( parentUniforms, {
-
+			envMap: {
+				value: null
+			}
 		} );
 
 		/*-------------------------------
@@ -95,7 +97,8 @@ export class Content extends THREE.Object3D {
 			init
 		-------------------------------*/
 
-		this.ukonpower.show();
+		// this.ukonpower.show();
+		this.recollection.show();
 
 	}
 
@@ -147,13 +150,29 @@ export class Content extends THREE.Object3D {
 
 		this.info.resize( layerInfo );
 
+		for ( let i = 0; i < this.contentMeshList.length; i ++ ) {
+
+			this.contentMeshList[ i ].resize( layerInfo );
+
+		}
+
 	}
 
 	public update( deltaTime: number, camera: THREE.PerspectiveCamera ) {
 
 		this.info.update( deltaTime, camera );
 
-		this.ukonpower.update( deltaTime );
+		for ( let i = 0; i < this.contentMeshList.length; i ++ ) {
+
+			this.contentMeshList[ i ].update( deltaTime );
+
+		}
+
+	}
+
+	public updateEnvMap( envMap: THREE.CubeTexture ) {
+
+		this.commonUniforms.envMap.value = envMap;
 
 	}
 

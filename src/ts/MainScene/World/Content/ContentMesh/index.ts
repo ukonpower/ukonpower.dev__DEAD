@@ -75,4 +75,10 @@ export class ContentMesh extends THREE.Object3D {
 
 	}
 
+	public update( deltaTime: number ) {
+	}
+
+	public resize( layerInfo: ORE.LayerInfo ) {
+	}
+
 }

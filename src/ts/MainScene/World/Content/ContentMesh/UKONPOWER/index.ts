@@ -120,6 +120,8 @@ export class UKONPOWER extends ContentMesh {
 
 	public update( deltaTime: number ) {
 
+		super.update( deltaTime );
+
 		if ( this.animator.isAnimatingVariable( 'faceOpFrame' ) ) {
 
 			this.updateFrame( this.animator.get( 'faceOpFrame' ) || 0 );

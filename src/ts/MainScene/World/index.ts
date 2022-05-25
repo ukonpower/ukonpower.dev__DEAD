@@ -69,7 +69,7 @@ export class World extends THREE.Object3D {
 
 		let lightTarget = new THREE.Object3D();
 		lightTarget.position.set( 0.0, 0.0, - 9.0 );
-		this.scene.add( lightTarget );
+		this.add( lightTarget );
 
 		let light = new THREE.DirectionalLight();
 		light.position.set( - 15, 20, 2 );
@@ -85,15 +85,14 @@ export class World extends THREE.Object3D {
 		light.shadow.camera.far = 35.0;
 		light.shadow.bias = - 0.002;
 		light.shadow.mapSize.set( 2048, 2048 );
-
-		this.scene.add( light );
+		this.add( light );
 
 		/*-------------------------------
 			Background
 		-------------------------------*/
 
 		this.background = new Background( this.commonUniforms );
-		this.scene.add( this.background );
+		this.add( this.background );
 
 		/*-------------------------------
 			BackNoise
@@ -121,7 +120,7 @@ export class World extends THREE.Object3D {
 		this.trail = new Trail( this.renderer, 30, 30, this.commonUniforms );
 		this.trail.castShadow = true;
 		this.trail.position.set( 0.0, 8.0, 5.0 );
-		this.scene.add( this.trail );
+		this.add( this.trail );
 
 		/*-------------------------------
 			Particle
@@ -130,7 +129,7 @@ export class World extends THREE.Object3D {
 		this.particles = new Particles( this.commonUniforms );
 		this.particles.position.set( 0.0, 1.0, 11.0 );
 		this.particles.frustumCulled = false;
-		this.scene.add( this.particles );
+		this.add( this.particles );
 
 		/*-------------------------------
 			Ring
@@ -211,6 +210,8 @@ export class World extends THREE.Object3D {
 		} );
 
 		this.trail.updateEnvMap( envMap );
+
+		this.content.updateEnvMap( envMap );
 
 	}
 

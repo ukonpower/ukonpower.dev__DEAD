@@ -309,10 +309,11 @@ export class MainScene extends ORE.BaseLayer {
 
 	public onResize() {
 
-		super.onResize();
-
 		let canvasInner = document.querySelector( '.canvas-inner' ) as HTMLElement;
 		canvasInner.style.top = Math.floor( window.innerHeight / 2 ) + "px";
+		// canvasInner.style.height = Math.floor( window.innerHeight * ( 55 / 100 ) ) + 'px';
+
+		super.onResize();
 
 		if ( this.cameraController ) {
 
