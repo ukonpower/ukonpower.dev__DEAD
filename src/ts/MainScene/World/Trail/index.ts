@@ -22,6 +22,9 @@ declare interface Datas{
 export class Trail extends PowerMesh {
 
 	private renderer: THREE.WebGLRenderer;
+
+	private animator: ORE.Animator;
+
 	private num: number;
 	private length: number;
 
@@ -37,6 +40,17 @@ export class Trail extends PowerMesh {
 			deltaTime: {
 				value: 1
 			},
+		} );
+
+		/*-------------------------------
+			Animator
+		-------------------------------*/
+
+		let animator = window.gManager.animator;
+
+		commonUniforms.oregl = animator.add( {
+			name: 'trailOreGL',
+			initValue: 0
 		} );
 
 		/*-------------------------------
@@ -131,6 +145,8 @@ export class Trail extends PowerMesh {
 			fragmentShader: trailFrag,
 			uniforms: meshUniforms
 		} );
+
+		this.animator = animator;
 
 		this.commonUniforms.metalness.value = 0.0;
 		this.commonUniforms.roughness.value = 0.0;
@@ -241,6 +257,12 @@ export class Trail extends PowerMesh {
 
 		this.meshUniforms.dataPos.value = this.datas.position.buffer.texture;
 		this.meshUniforms.dataVel.value = this.datas.velocity.buffer.texture;
+
+	}
+
+	public switchOreGL( oregl: boolean ) {
+
+		this.animator.animate( 'trailOreGL', oregl ? 1 : 0, 2 );
 
 	}
 

@@ -12,6 +12,7 @@ varying vec3 vWorldPos;
 varying vec2 vHighPrecisionZW;
 
 uniform float time;
+uniform float oregl;
 
 uniform sampler2D dataPos;
 uniform float aboutOffset;
@@ -57,9 +58,14 @@ void main( void ) {
     vec3 vec = normalize(nPos - pos);
     float rotX = atan2(vec.y,vec.z);
 
-    p.xy *= smoothstep( 0.0, 1.0, 1.0 - uvx );
-	p.xy *= ((sin( computeUV.y * TPI ) * 0.5 + 0.5) * 0.7 + 0.3);
-	p.xy *= 1.0 + sin( computeUV.x * 10.0 - time * 10.0) * 0.2;
+	float size = 1.0;
+    size *= smoothstep( 0.0, 1.0, 1.0 - uvx );
+	size *= ((sin( computeUV.y * TPI ) * 0.5 + 0.5) * 0.7 + 0.3);
+	size *= 1.0 + sin( computeUV.x * 10.0 - time * 10.0) * 0.2;
+
+	size = mix( size, sin(uvx * PI) * ((sin(uvy * PI) + 0.1)), oregl );
+
+	p.xy *= size;
 
 	mat3 rot = makeRotationDir( vec, vec3( 0.0, 1.0, 0.0 ) );
 	p *= rot;

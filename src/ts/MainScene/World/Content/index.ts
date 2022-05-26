@@ -109,7 +109,13 @@ export class Content extends THREE.Object3D {
 
 		// this.ukonpower.show();
 		// this.recollection.show();
-		this.oregl.show();
+		// this.oregl.show();
+
+		setTimeout( () => {
+
+			this.select( 'oregl' );
+
+		}, 0 );
 
 	}
 

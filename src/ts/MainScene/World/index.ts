@@ -175,6 +175,18 @@ export class World extends THREE.Object3D {
 
 		this.content = new Content( this.renderer, this.scene.getObjectByName( 'Content' ) as THREE.Object3D, this.commonUniforms );
 
+		this.content.addEventListener( 'select', ( e ) => {
+
+			this.trail.switchOreGL( e.contentName == 'oregl' );
+
+		} );
+
+		// this.content.addEventListener( 'close', () => {
+
+		// 	this.trail.switchOreGL( false );
+
+		// } );
+
 		this.powerMeshAll.push( this.content.ukonpower.face );
 
 	}
