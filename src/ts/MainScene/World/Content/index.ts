@@ -5,6 +5,7 @@ import { UKONPOWER } from './ContentMesh/UKONPOWER';
 import { ContentMesh } from './ContentMesh';
 import { Recollection } from './ContentMesh/Recollection';
 import { ContentControls } from './ContentControls';
+import { OreGL } from './ContentMesh/OreGL';
 
 export class Content extends THREE.Object3D {
 
@@ -28,6 +29,7 @@ export class Content extends THREE.Object3D {
 
 	public ukonpower: UKONPOWER;
 	public recollection: Recollection;
+	public oregl: OreGL;
 
 	constructor( renderer: THREE.WebGLRenderer, contentRoot: THREE.Object3D, parentUniforms: ORE.Uniforms ) {
 
@@ -93,12 +95,21 @@ export class Content extends THREE.Object3D {
 
 		this.contentMeshList.push( this.recollection );
 
+		// oregl
+
+		this.oregl = new OreGL( this.commonUniforms );
+		this.oregl.addEventListener( 'click', onClickMesh );
+		this.root.add( this.oregl );
+
+		this.contentMeshList.push( this.oregl );
+
 		/*-------------------------------
 			init
 		-------------------------------*/
 
 		// this.ukonpower.show();
-		this.recollection.show();
+		// this.recollection.show();
+		this.oregl.show();
 
 	}
 

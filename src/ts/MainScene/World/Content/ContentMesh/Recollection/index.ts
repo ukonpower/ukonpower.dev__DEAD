@@ -46,7 +46,7 @@ export class Recollection extends ContentMesh {
 			transparent: true,
 		} );
 
-		this.recollectionMesh.name = 'recollection/mesh';
+		this.recollectionMesh.name = this.name + '/mesh';
 
 		this.add( this.recollectionMesh );
 
