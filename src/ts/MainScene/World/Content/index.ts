@@ -113,7 +113,7 @@ export class Content extends THREE.Object3D {
 
 		setTimeout( () => {
 
-			this.select( 'oregl' );
+			this.select( 'ukonpower' );
 
 		}, 0 );
 

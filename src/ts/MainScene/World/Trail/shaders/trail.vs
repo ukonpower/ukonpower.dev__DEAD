@@ -63,7 +63,7 @@ void main( void ) {
 	size *= ((sin( computeUV.y * TPI ) * 0.5 + 0.5) * 0.7 + 0.3);
 	size *= 1.0 + sin( computeUV.x * 10.0 - time * 10.0) * 0.2;
 
-	size = mix( size, sin(uvx * PI) * ((sin(uvy * PI) + 0.1)), oregl );
+	size = mix( size, sin(uvx * PI) * 0.2, oregl );
 
 	p.xy *= size;
 

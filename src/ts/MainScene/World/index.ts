@@ -117,7 +117,7 @@ export class World extends THREE.Object3D {
 			Trail
 		-------------------------------*/
 
-		this.trail = new Trail( this.renderer, 30, 30, this.commonUniforms );
+		this.trail = new Trail( this.renderer, 30, 50, this.commonUniforms );
 		this.trail.castShadow = true;
 		this.trail.position.set( 0.0, 8.0, 5.0 );
 		this.add( this.trail );
@@ -180,12 +180,6 @@ export class World extends THREE.Object3D {
 			this.trail.switchOreGL( e.contentName == 'oregl' );
 
 		} );
-
-		// this.content.addEventListener( 'close', () => {
-
-		// 	this.trail.switchOreGL( false );
-
-		// } );
 
 		this.powerMeshAll.push( this.content.ukonpower.face );
 

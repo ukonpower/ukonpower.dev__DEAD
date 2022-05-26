@@ -2,6 +2,8 @@ varying vec2 vUv;
 varying vec3 vTangent;
 varying vec3 vBitangent;
 
+uniform float oregl;
+
 /*-------------------------------
 	Require
 -------------------------------*/
@@ -608,6 +610,24 @@ void main( void ) {
 		#pragma unroll_loop_end
 
 	#endif
+
+	vec3 lightPos = vec3( 0.0 );
+	vec3 hv = vec3( 0.0 );
+	vec3 c = vec3( 0.5 );
+
+	if( oregl > 0.0 ) {
+
+		outColor += 0.3 * oregl;
+
+		lightPos = vec3( -10.0, 0.0, 2.0 );
+		hv = normalize( geo.viewDir + normalize( lightPos - geo.pos ) );
+		outColor += ( dot( geo.normalWorld, normalize( lightPos ) ) + vec3( ggx( dot( geo.normal, hv ), 0.2 ) * 0.1 ) ) * #ff0044 * oregl;
+		
+		lightPos = vec3( 10.0, 0.0, 2.0 );
+		hv = normalize( geo.viewDir + normalize( lightPos - geo.pos ) );
+		outColor += ( dot( geo.normalWorld, normalize( lightPos ) ) + vec3( ggx( dot( geo.normal, hv ), 0.2 ) * 0.1 ) ) * #4400ff * oregl;
+
+	}
 
 	#if defined( USE_ENV_MAP ) || defined( IS_REFLECTIONPLANE )
 
