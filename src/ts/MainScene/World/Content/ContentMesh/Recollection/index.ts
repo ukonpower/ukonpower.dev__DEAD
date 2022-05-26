@@ -10,7 +10,7 @@ import passThroughFrag from './shaders/passThrough.fs';
 
 export class Recollection extends ContentMesh {
 
-	private recollectionMesh: THREE.Mesh;
+	public mesh: THREE.Mesh;
 
 	private sceneRenderTarget: THREE.WebGLRenderTarget;
 	private passThrough?: ORE.PostProcessing;
@@ -26,6 +26,7 @@ export class Recollection extends ContentMesh {
 			winResolution: {
 				value: new THREE.Vector2()
 			},
+			noiseTex: window.gManager.assetManager.getTex( 'noise' )
 		} );
 
 		/*-------------------------------
@@ -38,19 +39,19 @@ export class Recollection extends ContentMesh {
 			Mesh
 		-------------------------------*/
 
-		this.recollectionMesh = mesh;
-		this.recollectionMesh.material = new THREE.ShaderMaterial( {
+		this.mesh = mesh;
+		this.mesh.material = new THREE.ShaderMaterial( {
 			vertexShader: recollectionVert,
 			fragmentShader: recollectionFrag,
 			uniforms: this.commonUniforms,
 			transparent: true,
 		} );
 
-		this.recollectionMesh.name = this.name + '/mesh';
+		this.mesh.name = this.name + '/mesh';
 
-		this.add( this.recollectionMesh );
+		this.add( this.mesh );
 
-		this.recollectionMesh.onBeforeRender = ( renderer, scene, camera ) => {
+		this.mesh.onBeforeRender = ( renderer, scene, camera ) => {
 
 			if ( ! this.passThrough ) {
 
@@ -76,8 +77,10 @@ export class Recollection extends ContentMesh {
 
 	public update( deltaTime: number ) {
 
-		this.recollectionMesh.rotateX( deltaTime * 0.1 );
-		this.recollectionMesh.rotateY( deltaTime * 0.24 );
+		super.update( deltaTime );
+
+		this.mesh.rotateX( deltaTime * 0.1 );
+		this.mesh.rotateY( deltaTime * 0.24 );
 
 	}
 

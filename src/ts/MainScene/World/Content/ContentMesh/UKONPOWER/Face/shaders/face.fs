@@ -497,8 +497,6 @@ void main( void ) {
 	float borderVisibility = smoothstep( 0.0, 0.2, -1.0 + bUv.y + yVisibility * 1.2 );
 	mat.opacity = smoothstep( 0.0, 0.5, borderVisibility);
 
-	mat.opacity *= visibility;
-
 	/*-------------------------------
 		Turing Pattern
 	-------------------------------*/
@@ -524,6 +522,18 @@ void main( void ) {
 	// output
 	vec3 outColor = vec3( 0.0 );
 	float outOpacity = mat.opacity;
+
+	if( visibility < 1.0 ) {
+
+		vec4 noise = texture2D( noiseTex, vUv );
+
+		float v = step( 0.0, -noise.x * 1.4 + visibility * 1.0 );
+
+		if( v == 0.0 ) {
+			discard;
+		}
+
+	}
 
 	/*-------------------------------
 		Depth

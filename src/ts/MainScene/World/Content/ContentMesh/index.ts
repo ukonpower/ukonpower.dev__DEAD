@@ -28,6 +28,11 @@ export class ContentMesh extends THREE.Object3D {
 			initValue: 0
 		} );
 
+		this.animator.add( {
+			name: 'rotation' + this.uuid,
+			initValue: - 1
+		} );
+
 		/*-------------------------------
 			Click
 		-------------------------------*/
@@ -57,6 +62,10 @@ export class ContentMesh extends THREE.Object3D {
 
 		this.animator.animate( 'visibility' + this.uuid, 1, duration );
 
+		this.animator.setValue( 'rotation' + this.uuid, - 1 );
+		this.animator.animate( 'rotation' + this.uuid, 0, duration );
+
+
 	}
 
 	public hide() {
@@ -73,9 +82,18 @@ export class ContentMesh extends THREE.Object3D {
 
 		} );
 
+		this.animator.animate( 'rotation' + this.uuid, 1, duration );
+
 	}
 
 	public update( deltaTime: number ) {
+
+		if ( this.animator.isAnimatingVariable( 'rotation' + this.uuid ) ) {
+
+			this.rotation.y = ( this.animator.get<number>( 'rotation' + this.uuid ) || 0 ) * Math.PI;
+
+		}
+
 	}
 
 	public resize( layerInfo: ORE.LayerInfo ) {

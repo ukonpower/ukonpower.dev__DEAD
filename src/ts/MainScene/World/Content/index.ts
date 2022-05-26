@@ -15,6 +15,10 @@ export class Content extends THREE.Object3D {
 
 	public root: THREE.Object3D;
 
+	// animator
+
+	private animator: ORE.Animator;
+
 	// controls
 
 	public controls: ContentControls;
@@ -43,6 +47,17 @@ export class Content extends THREE.Object3D {
 			envMap: {
 				value: null
 			}
+		} );
+
+		/*-------------------------------
+			Animator
+		-------------------------------*/
+
+		this.animator = window.gManager.animator;
+
+		this.commonUniforms.contentChange = this.animator.add( {
+			name: 'contentChange',
+			initValue: 0
 		} );
 
 		/*-------------------------------
@@ -107,6 +122,10 @@ export class Content extends THREE.Object3D {
 			init
 		-------------------------------*/
 
+		this.ukonpower.mesh.renderOrder = 900;
+		this.oregl.mesh.renderOrder = 901;
+		this.recollection.mesh.renderOrder = 920;
+
 		// this.ukonpower.show();
 		// this.recollection.show();
 		// this.oregl.show();
@@ -125,6 +144,9 @@ export class Content extends THREE.Object3D {
 			type: 'select',
 			contentName
 		} );
+
+		this.animator.setValue( 'contentChange', 0 );
+		this.animator.animate( 'contentChange', 1, 3 );
 
 		this.contentMeshList.forEach( item => {
 
@@ -181,7 +203,8 @@ export class Content extends THREE.Object3D {
 
 		for ( let i = 0; i < this.contentMeshList.length; i ++ ) {
 
-			this.contentMeshList[ i ].update( deltaTime );
+			let content = this.contentMeshList[ i ];
+			content.update( deltaTime );
 
 		}
 

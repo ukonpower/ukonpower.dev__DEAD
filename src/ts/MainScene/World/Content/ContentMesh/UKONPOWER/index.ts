@@ -10,7 +10,7 @@ export class UKONPOWER extends ContentMesh {
 
 	private actionOP: ORE.AnimationAction | null = null;
 
-	public face: Face;
+	public mesh: Face;
 
 	// turing
 
@@ -64,11 +64,11 @@ export class UKONPOWER extends ContentMesh {
 		this.rotation.copy( faceMesh.rotation );
 		this.scale.copy( faceMesh.scale );
 
-		this.face = new Face( faceMesh, this.commonUniforms );
-		this.face.position.set( 0, 0, 0 );
-		this.face.rotation.set( 0, 0, 0 );
-		this.face.scale.set( 1.0, 1.0, 1.0 );
-		this.add( this.face );
+		this.mesh = new Face( faceMesh, this.commonUniforms );
+		this.mesh.position.set( 0, 0, 0 );
+		this.mesh.rotation.set( 0, 0, 0 );
+		this.mesh.scale.set( 1.0, 1.0, 1.0 );
+		this.add( this.mesh );
 
 	}
 
@@ -134,7 +134,7 @@ export class UKONPOWER extends ContentMesh {
 
 		this.turingPattern.update( deltaTime );
 
-		this.face.turing = this.turingPattern.turingPatternRenderer.texture;
+		this.mesh.turing = this.turingPattern.turingPatternRenderer.texture;
 
 	}
 

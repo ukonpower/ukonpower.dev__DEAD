@@ -5,8 +5,7 @@ varying vec3 vViewPos;
 varying vec3 vWorldPos;
 
 uniform samplerCube envMap;
-uniform sampler2D backTex;
-uniform vec2 winResolution;
+uniform sampler2D noiseTex;
 uniform float visibility;
 
 #pragma glslify: import('./constants.glsl' )
@@ -26,6 +25,18 @@ float GGX(vec3 normal, vec3 halfDir, float roughness) {
 }
 
 void main( void ) {
+
+	if( visibility < 1.0 ) {
+
+		vec4 noise = texture2D( noiseTex, vUv );
+
+		float v = step( 0.0, -noise.x * 1.4 + visibility * 1.0 );
+
+		if( v == 0.0 ) {
+			discard;
+		}
+
+	}
 
 	vec3 pos = -vViewPos;
 	vec3 posWorld = vWorldPos;
@@ -58,6 +69,6 @@ void main( void ) {
 	float f = fresnel( dot( viewDir, normal ) );
 	c = mix( c, textureCube( envMap, reflect( viewDirWorld.xyz, normal ) ).xyz, f );
 
-	gl_FragColor = vec4( c, visibility );
+	gl_FragColor = vec4( c, 1.0 );
 
 }

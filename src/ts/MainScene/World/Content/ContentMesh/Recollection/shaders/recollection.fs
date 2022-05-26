@@ -6,6 +6,7 @@ varying vec3 vWorldPos;
 
 uniform samplerCube envMap;
 uniform sampler2D backTex;
+uniform sampler2D noiseTex;
 uniform vec2 winResolution;
 uniform float visibility;
 
@@ -26,6 +27,18 @@ float GGX(vec3 normal, vec3 halfDir, float roughness) {
 }
 
 void main( void ) {
+
+	if( visibility < 1.0 ) {
+
+		vec4 noise = texture2D( noiseTex, vUv );
+
+		float v = step( 0.0, -noise.x * 1.4 + visibility * 1.0 );
+
+		if( v == 0.0 ) {
+			discard;
+		}
+
+	}
 
 	vec3 pos = -vViewPos;
 	vec3 posWorld = vWorldPos;
@@ -49,6 +62,6 @@ void main( void ) {
 	c.y += nf * texture2D( backTex, uv - normal.xy * 0.04 ).y * 0.9;
 	c.z += nf * texture2D( backTex, uv - normal.xy * 0.05 ).z * 0.8;
 
-	gl_FragColor = vec4( c, visibility );
+	gl_FragColor = vec4( c, 1.0 );
 
 }

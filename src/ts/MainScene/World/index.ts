@@ -181,7 +181,7 @@ export class World extends THREE.Object3D {
 
 		} );
 
-		this.powerMeshAll.push( this.content.ukonpower.face );
+		this.powerMeshAll.push( this.content.ukonpower.mesh );
 
 	}
 

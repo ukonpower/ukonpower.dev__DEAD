@@ -8,7 +8,7 @@ import oreglFrag from './shaders/oregl.fs';
 
 export class OreGL extends ContentMesh {
 
-	private oreGlMesh: THREE.Mesh;
+	public mesh: THREE.Mesh;
 	private sceneRenderTarget: THREE.WebGLRenderTarget;
 
 	constructor( parentUniforms: ORE.Uniforms ) {
@@ -16,6 +16,7 @@ export class OreGL extends ContentMesh {
 		super( 'oregl', parentUniforms );
 
 		this.commonUniforms = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {
+			noiseTex: window.gManager.assetManager.getTex( 'noise' )
 		} );
 
 		/*-------------------------------
@@ -28,21 +29,24 @@ export class OreGL extends ContentMesh {
 			Mesh
 		-------------------------------*/
 
-		this.oreGlMesh = new THREE.Mesh( new THREE.SphereBufferGeometry( 2, 30, 30 ), new THREE.ShaderMaterial( {
+		this.mesh = new THREE.Mesh( new THREE.SphereBufferGeometry( 2, 30, 30 ), new THREE.ShaderMaterial( {
 			vertexShader: oreglVert,
 			fragmentShader: oreglFrag,
 			uniforms: this.commonUniforms,
 			transparent: true,
 		} ) );
 
-		this.oreGlMesh.name = this.name + '/mesh';
+		this.mesh.name = this.name + '/mesh';
 
-		this.add( this.oreGlMesh );
+		this.add( this.mesh );
 
 
 	}
 
 	public update( deltaTime: number ) {
+
+		super.update( deltaTime );
+
 	}
 
 	public resize( layerInfo: ORE.LayerInfo ) {
