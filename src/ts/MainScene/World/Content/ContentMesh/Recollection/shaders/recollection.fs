@@ -11,6 +11,7 @@ uniform vec2 winResolution;
 uniform float visibility;
 
 #pragma glslify: import('./constants.glsl' )
+#pragma glslify: contentFade = require('./contentFade.glsl' )
 
 float fresnel( float dVH ) {
 
@@ -28,16 +29,12 @@ float GGX(vec3 normal, vec3 halfDir, float roughness) {
 
 void main( void ) {
 
+	vec3 emission = vec3( 0.0);
+
 	if( visibility < 1.0 ) {
 
-		vec4 noise = texture2D( noiseTex, vUv );
-
-		float v = step( 0.0, -noise.x * 1.4 + visibility * 1.0 );
-
-		if( v == 0.0 ) {
-			discard;
-		}
-
+		contentFade( visibility, noiseTex, vUv, emission );
+		
 	}
 
 	vec3 pos = -vViewPos;
@@ -61,6 +58,8 @@ void main( void ) {
 	c.x += nf * texture2D( backTex, uv - normal.xy * 0.03 ).x * 0.7;
 	c.y += nf * texture2D( backTex, uv - normal.xy * 0.04 ).y * 0.9;
 	c.z += nf * texture2D( backTex, uv - normal.xy * 0.05 ).z * 0.8;
+	c += emission;
+
 
 	gl_FragColor = vec4( c, 1.0 );
 

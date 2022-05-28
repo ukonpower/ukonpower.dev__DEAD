@@ -15,6 +15,7 @@ varying float vVisibility;
 -------------------------------*/
 
 #pragma glslify: hsv2rgb = require('./hsv2rgb.glsl' )
+#pragma glslify: contentFade = require('./contentFade.glsl' )
 #include <packing>
 
 vec2 packing16( float value ) { 
@@ -525,14 +526,8 @@ void main( void ) {
 
 	if( visibility < 1.0 ) {
 
-		vec4 noise = texture2D( noiseTex, vUv );
-
-		float v = step( 0.0, -noise.x * 1.4 + visibility * 1.0 );
-
-		if( v == 0.0 ) {
-			discard;
-		}
-
+		contentFade( visibility, noiseTex, vUv, outColor );
+		
 	}
 
 	/*-------------------------------
