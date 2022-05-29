@@ -10,36 +10,42 @@ export class ContentParticles extends THREE.Points {
 
 	constructor( parentUniforms?: ORE.Uniforms ) {
 
-		let range = new THREE.Vector3( 5, 5, 5 );
+		let range = new THREE.Vector2( 3.0, 5 );
 
-		let num = 500;
+		let num = 20;
 		let offsetPosArray: number[] = [];
 		let numArray: number[] = [];
 		let rndArray: number[] = [];
 
-		let length = 5;
+		let length = 70;
 
-		for ( let i = 0; i < num / length; i ++ ) {
+		for ( let i = 0; i < num; i ++ ) {
 
-			let x = Math.random() * range.x;
-			let y = Math.random() * range.y;
-			let z = Math.random() * range.z;
+			let r = Math.random() * Math.PI * 2.0;
+			let radius = ( 0.5 + Math.sin( i / num * Math.PI ) * 0.5 + ( Math.random() - 0.5 ) * 0.2 ) * range.x;
+
+			let x = Math.cos( r ) * radius;
+			let y = i / num * range.y;
+			let z = Math.sin( r ) * radius;
+
+			let rnd = Math.random();
 
 			for ( let j = 0; j < length; j ++ ) {
+
+				offsetPosArray.push(
+					x, y, z,
+				);
+
+				rndArray.push( rnd );
+				numArray.push( i / num, j / length );
+
 			}
-
-			offsetPosArray.push(
-				xyz,
-			);
-
-			numArray.push( i / num );
-			rndArray.push( Math.random() );
 
 		}
 
 		let geo = new THREE.BufferGeometry();
 		geo.setAttribute( 'position', new THREE.BufferAttribute( new Float32Array( offsetPosArray ), 3 ) );
-		geo.setAttribute( 'num', new THREE.BufferAttribute( new Float32Array( numArray ), 1 ) );
+		geo.setAttribute( 'num', new THREE.BufferAttribute( new Float32Array( numArray ), 2 ) );
 		geo.setAttribute( 'rnd', new THREE.BufferAttribute( new Float32Array( rndArray ), 1 ) );
 
 		let uni = ORE.UniformsLib.mergeUniforms( parentUniforms, {
@@ -48,6 +54,9 @@ export class ContentParticles extends THREE.Points {
 			},
 			particleSize: {
 				value: 1.0
+			},
+			colorOffset: {
+				value: 0.0
 			}
 		} );
 
@@ -63,6 +72,12 @@ export class ContentParticles extends THREE.Points {
 		super( geo, mat );
 
 		this.commonUniforms = uni;
+
+	}
+
+	public setColorOffset( value: number ) {
+
+		this.commonUniforms.colorOffset.value = value;
 
 	}
 

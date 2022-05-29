@@ -8,6 +8,8 @@ export class ContentMesh extends THREE.Object3D {
 
 	protected viewing: boolean = false;
 
+	public colorOffset: number = 0.0;
+
 	constructor( name: string, parentUniforms: ORE.Uniforms ) {
 
 		super();

@@ -156,11 +156,15 @@ export class Content extends THREE.EventDispatcher {
 		this.animator.setValue( 'contentChange', 0 );
 		this.animator.animate( 'contentChange', 1, 2.0 );
 
+		this.particles.rotation.y = ( Math.random() * Math.PI );
+
 		this.contentMeshList.forEach( item => {
 
 			if ( item.name == contentName ) {
 
 				item.show();
+
+				this.particles.setColorOffset( item.colorOffset );
 
 			} else {
 

@@ -20,6 +20,8 @@ export class UKONPOWER extends ContentMesh {
 
 		super( 'ukonpower', parentUniforms );
 
+		this.colorOffset = 0.0;
+
 		this.renderer = renderer;
 
 		this.commonUniforms = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {

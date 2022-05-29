@@ -19,6 +19,8 @@ export class Recollection extends ContentMesh {
 
 		super( 'recollection', parentUniforms );
 
+		this.colorOffset = 0.3;
+
 		this.commonUniforms = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {
 			backTex: {
 				value: null

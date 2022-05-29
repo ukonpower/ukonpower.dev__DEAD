@@ -15,6 +15,8 @@ export class OreGL extends ContentMesh {
 
 		super( 'oregl', parentUniforms );
 
+		this.colorOffset = 0.5;
+
 		this.commonUniforms = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {
 			noiseTex: window.gManager.assetManager.getTex( 'noise' )
 		} );
