@@ -6,8 +6,9 @@ import { ContentMesh } from './ContentMesh';
 import { Recollection } from './ContentMesh/Recollection';
 import { ContentControls } from './ContentControls';
 import { OreGL } from './ContentMesh/OreGL';
+import { ContentParticles } from './ContentParticles';
 
-export class Content extends THREE.Object3D {
+export class Content extends THREE.EventDispatcher {
 
 	private renderer: THREE.WebGLRenderer;
 
@@ -35,6 +36,8 @@ export class Content extends THREE.Object3D {
 	public recollection: Recollection;
 	public oregl: OreGL;
 
+	private particles: ContentParticles;
+
 	constructor( renderer: THREE.WebGLRenderer, contentRoot: THREE.Object3D, parentUniforms: ORE.Uniforms ) {
 
 		super();
@@ -57,7 +60,8 @@ export class Content extends THREE.Object3D {
 
 		this.commonUniforms.contentChange = this.animator.add( {
 			name: 'contentChange',
-			initValue: 0
+			initValue: 0,
+			// easing: ORE.Easings.linear
 		} );
 
 		/*-------------------------------
@@ -119,12 +123,16 @@ export class Content extends THREE.Object3D {
 		this.contentMeshList.push( this.oregl );
 
 		/*-------------------------------
-			init
+			Particles
 		-------------------------------*/
 
-		this.ukonpower.mesh.renderOrder = 900;
-		this.oregl.mesh.renderOrder = 901;
-		this.recollection.mesh.renderOrder = 920;
+		this.particles = new ContentParticles( this.commonUniforms );
+		this.particles.renderOrder = 999;
+		this.root.add( this.particles );
+
+		/*-------------------------------
+			init
+		-------------------------------*/
 
 		// this.ukonpower.show();
 		// this.recollection.show();
@@ -146,7 +154,7 @@ export class Content extends THREE.Object3D {
 		} );
 
 		this.animator.setValue( 'contentChange', 0 );
-		this.animator.animate( 'contentChange', 1, 3 );
+		this.animator.animate( 'contentChange', 1, 2.0 );
 
 		this.contentMeshList.forEach( item => {
 
