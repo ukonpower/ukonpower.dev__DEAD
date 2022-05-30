@@ -13,11 +13,11 @@ export class ContentControls extends EventEmitter {
 
 		// init items
 
-		this.contentItemList = Array.from( this.rootElm.querySelectorAll<HTMLElement>( '.footer-controls-item' ) );
+		this.contentItemList = Array.from( this.rootElm.querySelectorAll<HTMLElement>( '.footer-controls-buttonList-item' ) );
 
 		this.contentItemList.forEach( item => {
 
-			let btn = item.querySelector( '.footer-controls-item-button' ) as HTMLButtonElement;
+			let btn = item.querySelector( '.footer-controls-button' ) as HTMLButtonElement;
 
 			btn.addEventListener( 'click', this.onClickContent.bind( this ) );
 
