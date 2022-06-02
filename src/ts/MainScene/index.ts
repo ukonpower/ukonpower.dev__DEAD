@@ -5,6 +5,7 @@ import { RenderPipeline } from './RenderPipeline';
 import { CameraController } from './CameraController';
 import { AssetManager } from './GlobalManager/AssetManager';
 import { World } from './World';
+import { ContentSelector } from './ContentSelector';
 
 export class MainScene extends ORE.BaseLayer {
 
@@ -16,12 +17,20 @@ export class MainScene extends ORE.BaseLayer {
 
 	private world?: World;
 	private envMap?: THREE.CubeTexture;
+	private contentSelector?: ContentSelector;
 
 	constructor() {
 
 		super();
 
-		this.commonUniforms = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {} );
+		this.commonUniforms = ORE.UniformsLib.mergeUniforms( this.commonUniforms, {
+			contentNum: {
+				value: 0
+			},
+			contentFade: {
+				value: 0
+			}
+		} );
 
 	}
 
@@ -30,6 +39,12 @@ export class MainScene extends ORE.BaseLayer {
 		super.onBind( info );
 
 		this.gManager = new GlobalManager();
+
+		/*-------------------------------
+			ContentSelector
+		-------------------------------*/
+
+		this.contentSelector = new ContentSelector( 3, this.commonUniforms );
 
 		/*-------------------------------
 			Raycaster
@@ -226,7 +241,6 @@ export class MainScene extends ORE.BaseLayer {
 		} );
 
 		// @ts-ignore
-		// this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
 
 		this.connector.addListener( 'update/timeline', ( current: number ) => {
 
@@ -244,7 +258,8 @@ export class MainScene extends ORE.BaseLayer {
 
 		} );
 
-		// @ts-ignore
+		// this.connector.syncJsonScene( './assets/scene/ukonpower.json' );
+
 		this.connector.connect( 'ws://localhost:3100' );
 
 	}
@@ -254,6 +269,12 @@ export class MainScene extends ORE.BaseLayer {
 		if ( this.gManager ) {
 
 			this.gManager.update( deltaTime );
+
+		}
+
+		if ( this.contentSelector ) {
+
+			this.contentSelector.update( deltaTime );
 
 		}
 
@@ -343,13 +364,13 @@ export class MainScene extends ORE.BaseLayer {
 
 		if ( this.cameraController ) {
 
-			this.cameraController.updateCursor( args.normalizedPosition );
+			this.cameraController.updateCursor( args.screenPosition );
 
 		}
 
 		if ( this.gManager && ( args.delta.x != 0 || args.delta.y != 0 ) ) {
 
-			this.gManager.eRay.update( args.normalizedPosition, this.camera );
+			this.gManager.eRay.update( args.screenPosition, this.camera );
 
 		}
 
@@ -359,7 +380,13 @@ export class MainScene extends ORE.BaseLayer {
 
 		if ( this.gManager ) {
 
-			this.gManager.eRay.touchStart( args.normalizedPosition, this.camera );
+			this.gManager.eRay.touchStart( args.screenPosition, this.camera );
+
+		}
+
+		if ( this.contentSelector ) {
+
+			this.contentSelector.catch();
 
 		}
 
@@ -367,15 +394,30 @@ export class MainScene extends ORE.BaseLayer {
 
 	public onTouchMove( args: ORE.TouchEventArgs ) {
 
+		args.screenPosition;
+
+		if ( this.contentSelector ) {
+
+			this.contentSelector.drag( args.delta.x );
+
+		}
+
 	}
 
 	public onTouchEnd( args: ORE.TouchEventArgs ) {
 
 		if ( this.gManager ) {
 
-			this.gManager.eRay.touchEnd( args.normalizedPosition, this.camera );
+			this.gManager.eRay.touchEnd( args.screenPosition, this.camera );
 
 		}
+
+		if ( this.contentSelector ) {
+
+			this.contentSelector.release( args.delta.x );
+
+		}
+
 
 	}
 
